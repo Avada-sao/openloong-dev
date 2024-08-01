@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/xiao/proj/openloong-dyn-control
+CMAKE_SOURCE_DIR = /home/xiao/proj/openloong-dev
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/xiao/proj/openloong-dyn-control/build
+CMAKE_BINARY_DIR = /home/xiao/proj/openloong-dev/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xiao/proj/openloong-dyn-control/build/CMakeFiles /home/xiao/proj/openloong-dyn-control/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xiao/proj/openloong-dev/build/CMakeFiles /home/xiao/proj/openloong-dev/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xiao/proj/openloong-dyn-control/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xiao/proj/openloong-dev/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -109,32 +109,6 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named walk_mpc_wbc_joystick
-
-# Build rule for target.
-walk_mpc_wbc_joystick: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 walk_mpc_wbc_joystick
-.PHONY : walk_mpc_wbc_joystick
-
-# fast build rule for target.
-walk_mpc_wbc_joystick/fast:
-	$(MAKE) -f CMakeFiles/walk_mpc_wbc_joystick.dir/build.make CMakeFiles/walk_mpc_wbc_joystick.dir/build
-.PHONY : walk_mpc_wbc_joystick/fast
-
-#=============================================================================
-# Target rules for targets named walk_wbc_joystick
-
-# Build rule for target.
-walk_wbc_joystick: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 walk_wbc_joystick
-.PHONY : walk_wbc_joystick
-
-# fast build rule for target.
-walk_wbc_joystick/fast:
-	$(MAKE) -f CMakeFiles/walk_wbc_joystick.dir/build.make CMakeFiles/walk_wbc_joystick.dir/build
-.PHONY : walk_wbc_joystick/fast
 
 #=============================================================================
 # Target rules for targets named wbc_speed_test
@@ -538,33 +512,6 @@ demo/walk_mpc_wbc.cpp.s:
 	$(MAKE) -f CMakeFiles/walk_mpc_wbc.dir/build.make CMakeFiles/walk_mpc_wbc.dir/demo/walk_mpc_wbc.cpp.s
 .PHONY : demo/walk_mpc_wbc.cpp.s
 
-demo/walk_mpc_wbc_joystick.o: demo/walk_mpc_wbc_joystick.cpp.o
-
-.PHONY : demo/walk_mpc_wbc_joystick.o
-
-# target to build an object file
-demo/walk_mpc_wbc_joystick.cpp.o:
-	$(MAKE) -f CMakeFiles/walk_mpc_wbc_joystick.dir/build.make CMakeFiles/walk_mpc_wbc_joystick.dir/demo/walk_mpc_wbc_joystick.cpp.o
-.PHONY : demo/walk_mpc_wbc_joystick.cpp.o
-
-demo/walk_mpc_wbc_joystick.i: demo/walk_mpc_wbc_joystick.cpp.i
-
-.PHONY : demo/walk_mpc_wbc_joystick.i
-
-# target to preprocess a source file
-demo/walk_mpc_wbc_joystick.cpp.i:
-	$(MAKE) -f CMakeFiles/walk_mpc_wbc_joystick.dir/build.make CMakeFiles/walk_mpc_wbc_joystick.dir/demo/walk_mpc_wbc_joystick.cpp.i
-.PHONY : demo/walk_mpc_wbc_joystick.cpp.i
-
-demo/walk_mpc_wbc_joystick.s: demo/walk_mpc_wbc_joystick.cpp.s
-
-.PHONY : demo/walk_mpc_wbc_joystick.s
-
-# target to generate assembly for a file
-demo/walk_mpc_wbc_joystick.cpp.s:
-	$(MAKE) -f CMakeFiles/walk_mpc_wbc_joystick.dir/build.make CMakeFiles/walk_mpc_wbc_joystick.dir/demo/walk_mpc_wbc_joystick.cpp.s
-.PHONY : demo/walk_mpc_wbc_joystick.cpp.s
-
 demo/walk_wbc.o: demo/walk_wbc.cpp.o
 
 .PHONY : demo/walk_wbc.o
@@ -591,33 +538,6 @@ demo/walk_wbc.s: demo/walk_wbc.cpp.s
 demo/walk_wbc.cpp.s:
 	$(MAKE) -f CMakeFiles/walk_wbc.dir/build.make CMakeFiles/walk_wbc.dir/demo/walk_wbc.cpp.s
 .PHONY : demo/walk_wbc.cpp.s
-
-demo/walk_wbc_joystick.o: demo/walk_wbc_joystick.cpp.o
-
-.PHONY : demo/walk_wbc_joystick.o
-
-# target to build an object file
-demo/walk_wbc_joystick.cpp.o:
-	$(MAKE) -f CMakeFiles/walk_wbc_joystick.dir/build.make CMakeFiles/walk_wbc_joystick.dir/demo/walk_wbc_joystick.cpp.o
-.PHONY : demo/walk_wbc_joystick.cpp.o
-
-demo/walk_wbc_joystick.i: demo/walk_wbc_joystick.cpp.i
-
-.PHONY : demo/walk_wbc_joystick.i
-
-# target to preprocess a source file
-demo/walk_wbc_joystick.cpp.i:
-	$(MAKE) -f CMakeFiles/walk_wbc_joystick.dir/build.make CMakeFiles/walk_wbc_joystick.dir/demo/walk_wbc_joystick.cpp.i
-.PHONY : demo/walk_wbc_joystick.cpp.i
-
-demo/walk_wbc_joystick.s: demo/walk_wbc_joystick.cpp.s
-
-.PHONY : demo/walk_wbc_joystick.s
-
-# target to generate assembly for a file
-demo/walk_wbc_joystick.cpp.s:
-	$(MAKE) -f CMakeFiles/walk_wbc_joystick.dir/build.make CMakeFiles/walk_wbc_joystick.dir/demo/walk_wbc_joystick.cpp.s
-.PHONY : demo/walk_wbc_joystick.cpp.s
 
 demo/walk_wbc_speed_test.o: demo/walk_wbc_speed_test.cpp.o
 
@@ -816,8 +736,6 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... walk_mpc_wbc_joystick"
-	@echo "... walk_wbc_joystick"
 	@echo "... wbc_speed_test"
 	@echo "... float_control"
 	@echo "... jump_mpc"
@@ -860,15 +778,9 @@ help:
 	@echo "... demo/walk_mpc_wbc.o"
 	@echo "... demo/walk_mpc_wbc.i"
 	@echo "... demo/walk_mpc_wbc.s"
-	@echo "... demo/walk_mpc_wbc_joystick.o"
-	@echo "... demo/walk_mpc_wbc_joystick.i"
-	@echo "... demo/walk_mpc_wbc_joystick.s"
 	@echo "... demo/walk_wbc.o"
 	@echo "... demo/walk_wbc.i"
 	@echo "... demo/walk_wbc.s"
-	@echo "... demo/walk_wbc_joystick.o"
-	@echo "... demo/walk_wbc_joystick.i"
-	@echo "... demo/walk_wbc_joystick.s"
 	@echo "... demo/walk_wbc_speed_test.o"
 	@echo "... demo/walk_wbc_speed_test.i"
 	@echo "... demo/walk_wbc_speed_test.s"

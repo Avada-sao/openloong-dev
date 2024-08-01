@@ -116,8 +116,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/walk_mpc_wbc_joystick.dir/DependInfo.cmake"
-  "CMakeFiles/walk_wbc_joystick.dir/DependInfo.cmake"
   "CMakeFiles/wbc_speed_test.dir/DependInfo.cmake"
   "CMakeFiles/float_control.dir/DependInfo.cmake"
   "CMakeFiles/jump_mpc.dir/DependInfo.cmake"

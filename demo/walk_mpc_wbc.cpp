@@ -26,21 +26,21 @@ const   double  dt = 0.001;
 const   double  dt_200Hz = 0.005;
 // MuJoCo load and compile model
 char error[1000] = "Could not load binary model";
-mjModel* mj_model = mj_loadXML("../models/scene.xml", 0, error, 1000);
+mjModel* mj_model = mj_loadXML("../models/a1_scene_board.xml", 0, error, 1000);
 mjData* mj_data = mj_makeData(mj_model);
 
 int main(int argc, char **argv) {
     // initialize classes
     UIctr uiController(mj_model,mj_data);   // UI control for Mujoco
     MJ_Interface mj_interface(mj_model, mj_data); // data interface for Mujoco
-    Pin_KinDyn kinDynSolver("../models/AzureLoong.urdf"); // kinematics and dynamics solver
+    Pin_KinDyn kinDynSolver("../models/a1.urdf"); // kinematics and dynamics solver
     DataBus RobotState(kinDynSolver.model_nv); // data bus
-    WBC_priority WBC_solv(kinDynSolver.model_nv, 18, 22, 0.7, mj_model->opt.timestep); // WBC solver
+    WBC_priority WBC_solv(kinDynSolver.model_nv, 18, 26, 0.5, mj_model->opt.timestep); // WBC solver
     MPC MPC_solv(dt_200Hz);  // mpc controller
     GaitScheduler gaitScheduler(0.25, mj_model->opt.timestep); // gait scheduler
     PVT_Ctr pvtCtr(mj_model->opt.timestep,"../common/joint_ctrl_config.json");// PVT joint control
     FootPlacement footPlacement; // foot-placement planner
-    JoyStickInterpreter jsInterp(mj_model->opt.timestep); // desired baselink velocity generator
+    JoyStickInterpreter jsInterp(mj_model->opt.timestep); // desired baselink velocity generator  timestep:0.001
     DataLogger logger("../record/datalog.log"); // data logger
 
     // initialize UI: GLFW
@@ -49,10 +49,10 @@ int main(int argc, char **argv) {
     uiController.createWindow("Demo",false); // NOTE: if the saveVideo is set to true, the raw recorded file could be 2.5 GB for 15 seconds!
 
     // initialize variables
-    double stand_legLength = 1.01;//0.97;// desired baselink height
+    double stand_legLength = 0.345;//0.97;// desired baselink height
     double foot_height =0.07; // distance between the foot ankel joint and the bottom
-    double xv_des = 1.2;  // desired velocity in x direction
-	int model_nv=kinDynSolver.model_nv;
+    double xv_des = 0;  // desired velocity in x direction  
+	int model_nv=kinDynSolver.model_nv;// 6+2+7+7+3+6+6 = 37
 
     RobotState.width_hips = 0.229;
     footPlacement.kp_vx = 0.03;
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     footPlacement.stepHeight = 0.15;
     footPlacement.legLength=stand_legLength;
 
-    mju_copy(mj_data->qpos, mj_model->key_qpos, mj_model->nq*1); // set ini pos in Mujoco
+    // mju_copy(mj_data->qpos, mj_model->key_qpos, mj_model->nq*1); // set ini pos in Mujoco
 
     std::vector<double> motors_pos_des(model_nv - 6, 0);
     std::vector<double> motors_pos_cur(model_nv - 6, 0);
@@ -70,26 +70,30 @@ int main(int argc, char **argv) {
     std::vector<double> motors_tau_des(model_nv - 6, 0);
     std::vector<double> motors_tau_cur(model_nv - 6, 0);
 
-    // ini position and posture for foot-end and hand
-    Eigen::Vector3d fe_l_pos_L_des={-0.018, 0.113, -stand_legLength};
-    Eigen::Vector3d fe_r_pos_L_des={-0.018, -0.116, -stand_legLength};
-    Eigen::Vector3d fe_l_eul_L_des={-0.000, -0.008, -0.000};
-    Eigen::Vector3d fe_r_eul_L_des={0.000, -0.008, 0.000};
-    Eigen::Matrix3d fe_l_rot_des= eul2Rot(fe_l_eul_L_des(0),fe_l_eul_L_des(1),fe_l_eul_L_des(2));
-    Eigen::Matrix3d fe_r_rot_des= eul2Rot(fe_r_eul_L_des(0),fe_r_eul_L_des(1),fe_r_eul_L_des(2));
+    // // ini position and posture for foot-end and hand
+    // Eigen::Vector3d fe_l_pos_L_des={-0.018, 0.113, -stand_legLength};
+    // Eigen::Vector3d fe_r_pos_L_des={-0.018, -0.116, -stand_legLength};
+    // Eigen::Vector3d fe_l_eul_L_des={-0.000, -0.008, -0.000};
+    // Eigen::Vector3d fe_r_eul_L_des={0.000, -0.008, 0.000};
+    // Eigen::Matrix3d fe_l_rot_des= eul2Rot(fe_l_eul_L_des(0),fe_l_eul_L_des(1),fe_l_eul_L_des(2));
+    // Eigen::Matrix3d fe_r_rot_des= eul2Rot(fe_r_eul_L_des(0),fe_r_eul_L_des(1),fe_r_eul_L_des(2));
 
-    Eigen::Vector3d hd_l_pos_L_des={-0.02, 0.32, -0.159};
-    Eigen::Vector3d hd_r_pos_L_des={-0.02, -0.32, -0.159};
-    Eigen::Vector3d hd_l_eul_L_des={-1.7581, 0.2129, 2.9581};
-    Eigen::Vector3d hd_r_eul_L_des={1.7581, 0.2129, -2.9581};
-    Eigen::Matrix3d hd_l_rot_des= eul2Rot(hd_l_eul_L_des(0),hd_l_eul_L_des(1),hd_l_eul_L_des(2));
-    Eigen::Matrix3d hd_r_rot_des= eul2Rot(hd_r_eul_L_des(0),hd_r_eul_L_des(1),hd_r_eul_L_des(2));
+    // Eigen::Vector3d hd_l_pos_L_des={-0.02, 0.32, -0.159};
+    // Eigen::Vector3d hd_r_pos_L_des={-0.02, -0.32, -0.159};
+    // Eigen::Vector3d hd_l_eul_L_des={-1.7581, 0.2129, 2.9581};
+    // Eigen::Vector3d hd_r_eul_L_des={1.7581, 0.2129, -2.9581};
+    // Eigen::Matrix3d hd_l_rot_des= eul2Rot(hd_l_eul_L_des(0),hd_l_eul_L_des(1),hd_l_eul_L_des(2));
+    // Eigen::Matrix3d hd_r_rot_des= eul2Rot(hd_r_eul_L_des(0),hd_r_eul_L_des(1),hd_r_eul_L_des(2));
 
-    auto resLeg=kinDynSolver.computeInK_Leg(fe_l_rot_des,fe_l_pos_L_des,fe_r_rot_des,fe_r_pos_L_des);
-    auto resHand=kinDynSolver.computeInK_Hand(hd_l_rot_des,hd_l_pos_L_des,hd_r_rot_des,hd_r_pos_L_des);
+    // auto resLeg=kinDynSolver.computeInK_Leg(fe_l_rot_des,fe_l_pos_L_des,fe_r_rot_des,fe_r_pos_L_des);
+    // auto resHand=kinDynSolver.computeInK_Hand(hd_l_rot_des,hd_l_pos_L_des,hd_r_rot_des,hd_r_pos_L_des);
+
+
+    Eigen::VectorXd initJointPos=Eigen::VectorXd::Zero(mj_model->nq - 7);
+    initJointPos << 0.0, 0.5, -1.0, 0.0, 0.5, -1.0, 0.0, 0.5, -1.0, 0.0, 0.5, -1.0;
     Eigen::VectorXd qIniDes=Eigen::VectorXd::Zero(mj_model->nq, 1);
-    qIniDes.block(7, 0, mj_model->nq - 7, 1)= resLeg.jointPosRes + resHand.jointPosRes;
-    WBC_solv.setQini(qIniDes,RobotState.q);
+    qIniDes.block(7, 0, mj_model->nq - 7, 1)= initJointPos;
+    WBC_solv.setQini(qIniDes);
 
     // register variable name for data logger
     logger.addIterm("simTime",1);
@@ -139,13 +143,15 @@ int main(int argc, char **argv) {
 
             if (simTime > startWalkingTime) {
                 jsInterp.setWzDesLPara(0, 1);
-                jsInterp.setVxDesLPara(xv_des, 2.0); // jsInterp.setVxDesLPara(0.9,1);
-				RobotState.motionState = DataBus::Walk; // start walking
+                jsInterp.setVxDesLPara(xv_des, 2.0); // jsInterp.setVxDesLPara(0.9,1);  xv_des:遥控器的输入
             } else
-                jsInterp.setIniPos(RobotState.q(0), RobotState.q(1), RobotState.base_rpy(2));
+                jsInterp.setIniPos(RobotState.q(0), RobotState.q(1));
             jsInterp.step();
-            RobotState.js_pos_des(2) = stand_legLength + foot_height; // pos z is not assigned in jyInterp
+            // RobotState.js_pos_des(2) = stand_legLength + foot_height; // pos z is not assigned in jyInterp
+            RobotState.base_pos_des(2) = 0.365;
             jsInterp.dataBusWrite(RobotState); // only pos x, pos y, theta z, vel x, vel y , omega z are rewrote.
+
+            //没有遥控器的数据解析，只将期望速度进行处理使机器人慢慢加速，不过加速过程无限趋近期望速度，加速太慢，在真机上可能出现减速过慢的问题。
 
             if (simTime >= startSteppingTime) {
                 // gait scheduler
@@ -160,12 +166,15 @@ int main(int argc, char **argv) {
 
             // ------------- MPC ------------
 			MPC_count = MPC_count + 1;
-            if (MPC_count > (dt_200Hz / dt-1)) {
+            if (MPC_count > (dt_200Hz / dt-1)) { //5ms计算一次MPC
                 MPC_solv.dataBusRead(RobotState);
                 MPC_solv.cal();
                 MPC_solv.dataBusWrite(RobotState);
                 MPC_count = 0;
+                // std::cout<<RobotState.Fr_ff.transpose()<<std::endl;
             }
+
+            
 
             // ------------- WBC ------------
             // WBC Calculation
@@ -175,7 +184,7 @@ int main(int argc, char **argv) {
             WBC_solv.dataBusWrite(RobotState);
             // get the final joint command
             if (simTime <= startSteppingTime) {
-                RobotState.motors_pos_des = eigen2std(resLeg.jointPosRes + resHand.jointPosRes);
+                RobotState.motors_pos_des = eigen2std(initJointPos);
                 RobotState.motors_vel_des = motors_vel_des;
                 RobotState.motors_tor_des = motors_tau_des;
             } else {
@@ -191,7 +200,7 @@ int main(int argc, char **argv) {
                        1.0, 1.0, 1.0,//fl
                         1.0, 1.0, 1.0,
                         1.0, 1.0, 1.0,//fr
-                        1.0, 1.0, 1.0,1.0;
+                        1.0, 1.0, 1.0, 1.0;
                 MPC_solv.set_weight(1e-6, L_diag, K_diag);
 
                 Eigen::VectorXd pos_des = kinDynSolver.integrateDIY(RobotState.q, RobotState.wbc_delta_q_final);
@@ -205,12 +214,6 @@ int main(int argc, char **argv) {
             if (simTime <= 3) {
                 pvtCtr.calMotorsPVT(100.0 / 1000.0 / 180.0 * 3.1415);
             } else {
-                pvtCtr.setJointPD(100,10,"J_ankle_l_pitch");
-                pvtCtr.setJointPD(100,10,"J_ankle_l_roll");
-                pvtCtr.setJointPD(100,10,"J_ankle_r_pitch");
-                pvtCtr.setJointPD(100,10,"J_ankle_r_roll");
-                pvtCtr.setJointPD(1000,100,"J_knee_l_pitch");
-                pvtCtr.setJointPD(1000,100,"J_knee_r_pitch");
                 pvtCtr.calMotorsPVT();
             }
             pvtCtr.dataBusWrite(RobotState);

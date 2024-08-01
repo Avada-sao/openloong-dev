@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/xiao/proj/openloong-dyn-control/demo/float_control.cpp" "/home/xiao/proj/openloong-dyn-control/build/CMakeFiles/float_control.dir/demo/float_control.cpp.o"
+  "/home/xiao/proj/openloong-dev/demo/float_control.cpp" "/home/xiao/proj/openloong-dev/build/CMakeFiles/float_control.dir/demo/float_control.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -27,7 +27,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/xiao/proj/openloong-dyn-control/build/CMakeFiles/core.dir/DependInfo.cmake"
+  "/home/xiao/proj/openloong-dev/build/CMakeFiles/core.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

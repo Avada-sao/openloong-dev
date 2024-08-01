@@ -106,8 +106,8 @@ int main(int argc, char **argv) {
 
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Jac_stand(12, model_nv - 6);
             Jac_stand.setZero();
-			Jac_stand.block(0, 0, 6, model_nv - 6) = RobotState.J_l.block(0, 6, 6, model_nv - 6);
-			Jac_stand.block(6, 0, 6, model_nv - 6) = RobotState.J_r.block(0, 6, 6, model_nv - 6);
+			Jac_stand.block(0, 0, 6, model_nv - 6) = RobotState.J_fl.block(0, 6, 6, model_nv - 6);
+			Jac_stand.block(6, 0, 6, model_nv - 6) = RobotState.J_fr.block(0, 6, 6, model_nv - 6);
 
             // Enter here functions to send actuator commands, like:
             if (simTime <= prepareTime) {
@@ -251,7 +251,7 @@ int main(int argc, char **argv) {
                            2.0, 8.0, 1.0,//eul 1, 100,  1
                             100.0, 100.0, 200.0,//pCoM
                             1e-4, 1e-4, 2e-4,//w
-                            0.5, 0.01, 0.3;//vCoM
+                            0.02, 0.01, 0.3;//vCoM
                     K_diag <<
                            1.0, 0.5, 1.0,//fl
                             1.0, 10.0, 1.0,
@@ -323,8 +323,8 @@ int main(int argc, char **argv) {
             logger.recItermData("gpsVal", RobotState.base_pos);
             logger.recItermData("fe_l_pos_L_des", fe_l_pos_L_des);
             logger.recItermData("fe_r_pos_L_des", fe_r_pos_L_des);
-			logger.recItermData("fe_l_pos_L", RobotState.fe_l_pos_W);
-			logger.recItermData("fe_r_pos_L", RobotState.fe_r_pos_W);
+			logger.recItermData("fe_l_pos_L", RobotState.fe_fl_pos_W);
+			logger.recItermData("fe_r_pos_L", RobotState.fe_fr_pos_W);
 			logger.recItermData("Ufe", RobotState.fe_react_tau_cmd.block<nu - 1, 1>(nu * 0, 0));
             logger.finishLine();
         };

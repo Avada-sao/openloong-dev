@@ -1,4 +1,4 @@
-# Install script for directory: /home/xiao/proj/openloong-dyn-control
+# Install script for directory: /home/xiao/proj/openloong-dev
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/xiao/proj/openloong-dyn-control/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/xiao/proj/openloong-dev/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

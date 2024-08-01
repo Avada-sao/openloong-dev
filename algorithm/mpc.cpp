@@ -146,18 +146,19 @@ void MPC::dataBusRead(DataBus &Data) {
     pCoM = X_cur.block<3,1>(3,0);                   //当前机身位置
     pe.block<3,1>(0,0) = Data.fe_fl_pos_W;           //世界坐标系下左前脚位置
     pe.block<3,1>(3,0) = Data.fe_fr_pos_W;           //世界坐标系下右前脚位置
-    pe.block<3,1>(6,0) = Data.fe_rl_pos_W;           //世界坐标系下右后脚位置
-    pe.block<3,1>(9,0) = Data.fe_rr_pos_W;           //世界坐标系下左后脚位置
+    pe.block<3,1>(6,0) = Data.fe_rr_pos_W;           //世界坐标系下左后脚位置
+    pe.block<3,1>(9,0) = Data.fe_rl_pos_W;           //世界坐标系下右后脚位置
     
     pf2com.block<3,1>(0,0) = pe.block<3,1>(0,0) - pCoM;                 //机身到左前脚的向量表示
     pf2com.block<3,1>(3,0) = pe.block<3,1>(3,0) - pCoM;                 //机身到右前脚的向量表示
-    pf2com.block<3,1>(6,0) = pe.block<3,1>(6,0) - pCoM;                 //机身到右后脚的向量表示
-    pf2com.block<3,1>(9,0) = pe.block<3,1>(9,0) - pCoM;                 //机身到左后脚的向量表示
+    pf2com.block<3,1>(6,0) = pe.block<3,1>(6,0) - pCoM;                 //机身到左后脚的向量表示
+    pf2com.block<3,1>(9,0) = pe.block<3,1>(9,0) - pCoM;                 //机身到右后脚的向量表示
+    
 
     pf2comd.block<3,1>(0,0) = pe.block<3,1>(0,0) - Xd.block<3,1>(0,0);  //机身到左前脚期望位置的向量表示
     pf2comd.block<3,1>(3,0) = pe.block<3,1>(3,0) - Xd.block<3,1>(3,0);  //机身到右前脚期望位置的向量表示
-    pf2comd.block<3,1>(6,0) = pe.block<3,1>(6,0) - Xd.block<3,1>(6,0);  //机身到右后脚期望位置的向量表示
-    pf2comd.block<3,1>(9,0) = pe.block<3,1>(9,0) - Xd.block<3,1>(9,0);  //机身到左后脚期望位置的向量表示
+    pf2comd.block<3,1>(6,0) = pe.block<3,1>(6,0) - Xd.block<3,1>(6,0);  //机身到左后脚期望位置的向量表示
+    pf2comd.block<3,1>(9,0) = pe.block<3,1>(9,0) - Xd.block<3,1>(9,0);  //机身到右后脚期望位置的向量表示
 
     Ic = Data.inertia;
     // Ic <<   12.61,  0, 0.37
@@ -177,15 +178,10 @@ void MPC::dataBusRead(DataBus &Data) {
             legState[i] = legStateCur;
     }
 
-    //仍需修改  算法中没有用到这些参数
-    Eigen::Matrix<double, 3, 3>     R_slop;
-    R_slop = eul2Rot(Data.slop(0), Data.slop(1), Data.slop(2));
     if (legStateCur == DataBus::FrSt)
         R_f2w = Data.fe_r_rot_W;
     else if (legStateCur == DataBus::FlSt)
         R_f2w = Data.fe_l_rot_W;
-    else
-        R_f2w = R_slop;
     R_w2f = R_f2w.transpose();
 }
 
@@ -316,18 +312,19 @@ void MPC::cal() {
             } else if (legState[i] == DataBus::FlSt) {
                 Guess_value(i * nu + 2) = -0.5 * m * g;
                 Guess_value(i * nu + 5) = 0.0;
-                Guess_value(i * nu + 8) = -0.5 * m * g;
-				Guess_value(i * nu + 11) = 0.0;
+                Guess_value(i * nu + 8) = 0.0;
+                Guess_value(i * nu + 11) = -0.5 * m * g;
                 Guess_value(i * nu + 12) = m * g;
                 for (int j = 0; j < 3; j++) {
                     u_low(i * nu + j) = min[j];
                     u_low(i * nu + j + 3) = 0.0;
-                    u_low(i * nu + j + 6) = min[j];
-                    u_low(i * nu + j + 9) = 0.0;
+                    u_low(i * nu + j + 6) = 0.0;
+                    u_low(i * nu + j + 9) = min[j];
+                    
                     u_up(i * nu + j) = max[j];
                     u_up(i * nu + j + 3) = 0.0;
-                    u_up(i * nu + j + 6) = max[j];
-                    u_up(i * nu + j + 9) = 0.0;
+                    u_up(i * nu + j + 6) = 0.0;
+                    u_up(i * nu + j + 9) = max[j];
                 }
                 u_low(i * nu + 12) = m * g;
                 u_up(i * nu + 12) = m * g;
@@ -340,12 +337,13 @@ void MPC::cal() {
                 for (int j = 0; j < 3; j++) {
                     u_low(i * nu + j) = 0.0;
                     u_low(i * nu + j + 3) = min[j];
-                    u_low(i * nu + j + 6) = 0.0;
-                    u_low(i * nu + j + 9) = min[j];
+                    u_low(i * nu + j + 6) = min[j];
+                    u_low(i * nu + j + 9) = 0.0;
+                    
                     u_up(i * nu + j) = 0.0;
                     u_up(i * nu + j + 3) = max[j];
-                    u_up(i * nu + j + 6) = 0.0;
-                    u_up(i * nu + j + 9) = max[j];
+                    u_up(i * nu + j + 6) = max[j];
+                    u_up(i * nu + j + 9) = 0.0;
                 }
                 u_low(i * nu + 12) = m * g;
                 u_up(i * nu + 12) = m * g;
@@ -393,12 +391,12 @@ void MPC::cal() {
                 // ubA((nc * i + 4),0) = max[2];
                 ubA.block<ncfr,1>(nc * i + 4, 0).setZero();
                 // ubA((nc * i + 14),0) = max[2];
-                ubA.block<ncfr,1>(nc * i + 12, 0).setZero();
+                ubA.block<ncfr,1>(nc * i + 8, 0).setZero();
             }
             else if (legState[i] == DataBus::FrSt) {
                 ubA.block<ncfr,1>(nc * i, 0).setZero();
                 // ubA((nc * i + 9),0) = max[2];
-                ubA.block<ncfr,1>(nc * i + 8, 0).setZero();
+                ubA.block<ncfr,1>(nc * i + 12, 0).setZero();
                 // ubA((nc * i + 19),0) = max[2];
             }
         }   

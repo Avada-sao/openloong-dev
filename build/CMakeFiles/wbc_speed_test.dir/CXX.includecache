@@ -24608,25 +24608,25 @@ chrono
 cstdio
 -
 
-/home/xiao/proj/openloong-dyn-control/demo/walk_wbc_speed_test.cpp
+/home/xiao/proj/openloong-dev/demo/walk_wbc_speed_test.cpp
 iostream
 -
 useful_math.h
-/home/xiao/proj/openloong-dyn-control/demo/useful_math.h
+/home/xiao/proj/openloong-dev/demo/useful_math.h
 PVT_ctrl.h
-/home/xiao/proj/openloong-dyn-control/demo/PVT_ctrl.h
+/home/xiao/proj/openloong-dev/demo/PVT_ctrl.h
 pino_kin_dyn.h
-/home/xiao/proj/openloong-dyn-control/demo/pino_kin_dyn.h
+/home/xiao/proj/openloong-dev/demo/pino_kin_dyn.h
 data_logger.h
-/home/xiao/proj/openloong-dyn-control/demo/data_logger.h
+/home/xiao/proj/openloong-dev/demo/data_logger.h
 wbc_priority.h
-/home/xiao/proj/openloong-dyn-control/demo/wbc_priority.h
+/home/xiao/proj/openloong-dev/demo/wbc_priority.h
 gait_scheduler.h
-/home/xiao/proj/openloong-dyn-control/demo/gait_scheduler.h
+/home/xiao/proj/openloong-dev/demo/gait_scheduler.h
 foot_placement.h
-/home/xiao/proj/openloong-dyn-control/demo/foot_placement.h
+/home/xiao/proj/openloong-dev/demo/foot_placement.h
 joystick_interpreter.h
-/home/xiao/proj/openloong-dyn-control/demo/joystick_interpreter.h
+/home/xiao/proj/openloong-dev/demo/joystick_interpreter.h
 chrono
 -
 
