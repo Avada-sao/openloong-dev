@@ -30,6 +30,7 @@ mjModel* mj_model = mj_loadXML("../models/a1_scene_board.xml", 0, error, 1000);
 mjData* mj_data = mj_makeData(mj_model);
 
 int main(int argc, char **argv) {
+    std::cout<<"sdfsdfsdfsfsdf"<<std::endl;
     // initialize classes
     UIctr uiController(mj_model,mj_data);   // UI control for Mujoco
     MJ_Interface mj_interface(mj_model, mj_data); // data interface for Mujoco

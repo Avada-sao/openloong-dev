@@ -53,13 +53,10 @@ private:
     std::vector<LPF_Fst> tau_out_lpf;
     std::vector<int> PV_enable;
     double sign(double in);
-    const std::vector<std::string> motorName={"J_arm_l_01","J_arm_l_02","J_arm_l_03", "J_arm_l_04", "J_arm_l_05",
-                                              "J_arm_l_06","J_arm_l_07","J_arm_r_01", "J_arm_r_02", "J_arm_r_03",
-                                              "J_arm_r_04","J_arm_r_05","J_arm_r_06", "J_arm_r_07",
-                                              "J_head_yaw","J_head_pitch","J_waist_pitch","J_waist_roll", "J_waist_yaw",
-                                              "J_hip_l_roll", "J_hip_l_yaw", "J_hip_l_pitch", "J_knee_l_pitch",
-                                              "J_ankle_l_pitch", "J_ankle_l_roll", "J_hip_r_roll", "J_hip_r_yaw",
-                                              "J_hip_r_pitch", "J_knee_r_pitch", "J_ankle_r_pitch", "J_ankle_r_roll"}; // joint name in urdf and jason config files
+    const std::vector<std::string> motorName={"FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
+                                              "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
+                                              "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
+                                              "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",}; // joint name in urdf and jason config files
 };
 
 

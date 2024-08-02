@@ -302,7 +302,7 @@
       <exclude name="ex_waist_yaw_r_hip_yaw" body1="Link_waist_yaw" body2="Link_hip_r_yaw" />
         
   </contact>
-  <actuator>
+  <actuator> J_hip_r_roll
       <motor name="M_arm_l_01"  joint="J_arm_l_01" gear="1" ctrllimited="true" ctrlrange="-80 80"/>
       <motor name="M_arm_l_02"  joint="J_arm_l_02" gear="1" ctrllimited="true" ctrlrange="-80 80"/>
       <motor name="M_arm_l_03"  joint="J_arm_l_03" gear="1" ctrllimited="true" ctrlrange="-48 48"/>

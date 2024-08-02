@@ -18,18 +18,19 @@ MJ_Interface::MJ_Interface(mjModel *mj_modelIn, mjData *mj_dataIn) {
     motor_pos.assign(jointNum,0);
     motor_vel.assign(jointNum,0);
     motor_pos_Old.assign(jointNum,0);
+
     for (int i=0;i<jointNum;i++)
     {
         int tmpId= mj_name2id(mj_model,mjOBJ_JOINT,JointName[i].c_str());
         if (tmpId==-1)
         {
             std::cerr <<JointName[i]<< " not found in the XML file!" << std::endl;
-            std::terminate();
+            std::terminate();//terminate():用于终止程序
         }
         jntId_qpos[i]=mj_model->jnt_qposadr[tmpId];
         jntId_qvel[i]=mj_model->jnt_dofadr[tmpId];
         std::string motorName=JointName[i];
-        motorName="M"+motorName.substr(1);
+        motorName="M_"+motorName;
         tmpId= mj_name2id(mj_model,mjOBJ_ACTUATOR,motorName.c_str());
         if (tmpId==-1)
         {
@@ -54,6 +55,7 @@ void MJ_Interface::updateSensorValues() {
         motor_pos_Old[i]=motor_pos[i];
         motor_pos[i]=mj_data->qpos[jntId_qpos[i]];
         motor_vel[i]=mj_data->qvel[jntId_qvel[i]];
+
     }
     for (int i=0;i<4;i++)
         baseQuat[i]=mj_data->sensordata[orientataionSensorId+i];
@@ -78,12 +80,21 @@ void MJ_Interface::updateSensorValues() {
 }
 
 void MJ_Interface::setMotorsTorque(std::vector<double> &tauIn) {
-    for (int i=0;i<jointNum;i++)
+    // std::cout<<"tauIn: ";
+    for (int i=0;i<jointNum;i++){
         mj_data->ctrl[i]=tauIn.at(i);
+        // std::cout<<tauIn.at(i)<<"  ";
+    }
+    // std::cout<<std::endl;
 }
 
 void MJ_Interface::dataBusWrite(DataBus &busIn) {
     busIn.motors_pos_cur=motor_pos;
+    // std::cout<<"motor_pos: ";
+    // for (int i=0;i<jointNum;i++){
+    //     std::cout<<motor_pos[i]<<"  ";
+    // }
+    std::cout<<std::endl;
     busIn.motors_vel_cur=motor_vel;
     busIn.rpy[0]=rpy[0];
     busIn.rpy[1]=rpy[1];

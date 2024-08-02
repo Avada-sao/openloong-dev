@@ -1,17 +1,12 @@
 clear variables; close all
 dataRec=load('datalog.log');
 simTime=dataRec(:,1:1);
-motor_pos_des=dataRec(:,2:32);
-motor_pos_cur=dataRec(:,33:63);
-motor_vel_des=dataRec(:,64:94);
-motor_vel_cur=dataRec(:,95:125);
-motor_tor_des=dataRec(:,126:156);
-rpyVal=dataRec(:,157:159);
-base_omega_W=dataRec(:,160:162);
-gpsVal=dataRec(:,163:165);
-base_vel=dataRec(:,166:168);
-dX_cal=dataRec(:,169:180);
-Ufe=dataRec(:,181:192);
-Xd=dataRec(:,193:204);
-X_cur=dataRec(:,205:216);
-X_cal=dataRec(:,217:228);
+motors_pos_cur=dataRec(:,2:13);
+motors_vel_cur=dataRec(:,14:25);
+rpy=dataRec(:,26:28);
+fL=dataRec(:,29:31);
+fR=dataRec(:,32:34);
+basePos=dataRec(:,35:37);
+baseLinVel=dataRec(:,38:40);
+baseAcc=dataRec(:,41:43);
+baseAngVel=dataRec(:,44:46);
