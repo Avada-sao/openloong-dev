@@ -47,12 +47,12 @@ WBC_priority::WBC_priority(int model_nv_In, int QP_nvIn, int QP_ncIn, double miu
     //  WBC task defined and order build
     ///------------ walk --------------
     kin_tasks_walk.addTask("static_Contact");
-    kin_tasks_walk.addTask("PosRot");
+    // kin_tasks_walk.addTask("PosRot");
     // kin_tasks_walk.addTask("SwingLeg");
 
     std::vector<std::string> taskOrder_walk;
     taskOrder_walk.emplace_back("static_Contact");
-    taskOrder_walk.emplace_back("PosRot");
+    // taskOrder_walk.emplace_back("PosRot");
     // taskOrder_walk.emplace_back("SwingLeg");
 
 
@@ -356,6 +356,10 @@ void WBC_priority::computeTau() {
     Eigen::VectorXd tauRes;
     tauRes = dyn_M * eigen_ddq_Opt + dyn_Non - Jfe.transpose() * eigen_fr_Opt;
     tauJointRes = tauRes.block(6, 0, model_nv - 6, 1);
+    std::cout<<"M:"<<dyn_M<<std::endl;
+    std::cout<<"q_,f_:"<<eigen_xOpt.transpose()<<std::endl;
+    std::cout<<"C:"<<dyn_M<<std::endl;
+    std::cout<<"J_c:"<<Jc<<std::endl;
     last_nWSR = nWSR;
     last_cpu_time = cpu_time;
 }
@@ -375,25 +379,25 @@ void WBC_priority::computeDdq(Pin_KinDyn &pinKinDynIn) {
         kin_tasks_walk.taskLib[id].dJ = dJc;
         kin_tasks_walk.taskLib[id].W.diagonal() = Eigen::VectorXd::Ones(model_nv);
 
-        id = kin_tasks_walk.getId("PosRot");
-        kin_tasks_walk.taskLib[id].errX = Eigen::VectorXd::Zero(6);
-        kin_tasks_walk.taskLib[id].errX.block(0,0,3,1) = base_pos_des - q.block(0,0,3,1);
-        // if (fabs(kin_tasks_walk.taskLib[id].errX(0))>=0.02)
-        //     kin_tasks_walk.taskLib[id].errX(0)=0.02* sign(kin_tasks_walk.taskLib[id].errX(0));
-        // if (fabs(kin_tasks_walk.taskLib[id].errX(1))>=0.01)
-        //     kin_tasks_walk.taskLib[id].errX(1)=0.01* sign(kin_tasks_walk.taskLib[id].errX(1));
-        Eigen::Matrix3d desRot = eul2Rot(base_rpy_des(0), base_rpy_des(1), base_rpy_des(2));
-        kin_tasks_walk.taskLib[id].errX.block<3, 1>(3, 0) = diffRot(base_rot, desRot);
-        kin_tasks_walk.taskLib[id].derrX = Eigen::VectorXd::Zero(6);
-        kin_tasks_walk.taskLib[id].ddxDes = Eigen::VectorXd::Zero(6);
-        kin_tasks_walk.taskLib[id].dxDes = Eigen::VectorXd::Zero(6);
-        kin_tasks_walk.taskLib[id].kp = Eigen::MatrixXd::Identity(6, 6) * 10;
-        kin_tasks_walk.taskLib[id].kp.block(3,3,3,3)=Eigen::MatrixXd::Identity(3, 3) * 2000;
-        kin_tasks_walk.taskLib[id].kd = Eigen::MatrixXd::Identity(6, 6) * 2;
-        kin_tasks_walk.taskLib[id].kd.block(3,3,3,3)=Eigen::MatrixXd::Identity(3, 3) * 100;
-        kin_tasks_walk.taskLib[id].J = J_base;
-        kin_tasks_walk.taskLib[id].dJ = dJ_base;
-        kin_tasks_walk.taskLib[id].W.diagonal() = Eigen::VectorXd::Ones(model_nv);
+        // id = kin_tasks_walk.getId("PosRot");
+        // kin_tasks_walk.taskLib[id].errX = Eigen::VectorXd::Zero(6);
+        // kin_tasks_walk.taskLib[id].errX.block(0,0,3,1) = base_pos_des - q.block(0,0,3,1);
+        // // if (fabs(kin_tasks_walk.taskLib[id].errX(0))>=0.02)
+        // //     kin_tasks_walk.taskLib[id].errX(0)=0.02* sign(kin_tasks_walk.taskLib[id].errX(0));
+        // // if (fabs(kin_tasks_walk.taskLib[id].errX(1))>=0.01)
+        // //     kin_tasks_walk.taskLib[id].errX(1)=0.01* sign(kin_tasks_walk.taskLib[id].errX(1));
+        // Eigen::Matrix3d desRot = eul2Rot(base_rpy_des(0), base_rpy_des(1), base_rpy_des(2));
+        // kin_tasks_walk.taskLib[id].errX.block<3, 1>(3, 0) = diffRot(base_rot, desRot);
+        // kin_tasks_walk.taskLib[id].derrX = Eigen::VectorXd::Zero(6);
+        // kin_tasks_walk.taskLib[id].ddxDes = Eigen::VectorXd::Zero(6);
+        // kin_tasks_walk.taskLib[id].dxDes = Eigen::VectorXd::Zero(6);
+        // kin_tasks_walk.taskLib[id].kp = Eigen::MatrixXd::Identity(6, 6) * 10;
+        // kin_tasks_walk.taskLib[id].kp.block(3,3,3,3)=Eigen::MatrixXd::Identity(3, 3) * 2000;
+        // kin_tasks_walk.taskLib[id].kd = Eigen::MatrixXd::Identity(6, 6) * 2;
+        // kin_tasks_walk.taskLib[id].kd.block(3,3,3,3)=Eigen::MatrixXd::Identity(3, 3) * 100;
+        // kin_tasks_walk.taskLib[id].J = J_base;
+        // kin_tasks_walk.taskLib[id].dJ = dJ_base;
+        // kin_tasks_walk.taskLib[id].W.diagonal() = Eigen::VectorXd::Ones(model_nv);
 
         // id = kin_tasks_walk.getId("SwingLeg");
         // kin_tasks_walk.taskLib[id].errX = Eigen::VectorXd::Zero(6);
@@ -413,7 +417,12 @@ void WBC_priority::computeDdq(Pin_KinDyn &pinKinDynIn) {
     kin_tasks_walk.computeAll(des_delta_q, des_dq, des_ddq, dyn_M, dyn_M_inv, dq);
     delta_q_final_kin = kin_tasks_walk.out_delta_q;
     dq_final_kin = kin_tasks_walk.out_dq;
-    ddq_final_kin = kin_tasks_walk.out_ddq;
+    // ddq_final_kin = kin_tasks_walk.out_ddq;
+    ddq_final_kin = kin_tasks_walk.out_ddq.setZero();
+
+    std::cout<<"delta_p:"<<delta_q_final_kin.transpose()<<std::endl;
+    std::cout<<"dp:"<<dq_final_kin.transpose()<<std::endl;
+    std::cout<<"ddp:"<<ddq_final_kin.transpose()<<std::endl;
 
     // final WBC output collection
 

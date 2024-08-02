@@ -163,7 +163,8 @@ int main(int argc, const char** argv)
             RobotState.base_rpy_des << 0, 0, jsInterp.thetaZ;
             //RobotState.base_pos_des(2) = stand_legLength+foot_height;
             RobotState.base_pos_des(2) = 0.365;
-            RobotState.Fr_ff<<0,0,40,  0,0,40,  0,0,40,  0,0,40; //mass=12.453
+            // RobotState.Fr_ff<<0,0,40,  0,0,40,  0,0,40,  0,0,40; //mass=12.453
+            RobotState.Fr_ff<<0,0,0,  0,0,0,  0,0,0,  0,0,0; //mass=12.453
 
             // adjust des_delata_q, des_dq and des_ddq to achieve forward walking
             if (simTime > startWalkingTime + 1) {
