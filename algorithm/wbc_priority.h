@@ -44,7 +44,7 @@ public:
     Eigen::VectorXd delta_q_final_kin, dq_final_kin, ddq_final_kin, tauJointRes;    //KinWBC得出的delta_q，dp，ddp，关节力矩
     Eigen::Vector3d pCoMDes, pCoMCur;
 
-    PriorityTasks kin_tasks_walk, kin_tasks_stand;
+    PriorityTasks kin_tasks_walk;
     // void setQini(const Eigen::VectorXd &qIniDes, const Eigen::VectorXd &qIniCur);
     void setQini(const Eigen::VectorXd &qIni);
     void computeTau();

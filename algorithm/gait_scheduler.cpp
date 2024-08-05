@@ -89,25 +89,59 @@ void GaitScheduler::step() {
     double dPhi = 1.0 / tSwing * dt;
 
     phi += dPhi;
+
+    Eigen::Vector3d  s_F_W_1;
+    Eigen::Vector3d  s_R_W_1;
+    Eigen::Vector3d  st_F_W_1;
+    Eigen::Vector3d  st_R_W_1;
+    Eigen::Vector3d  hip;
+    
+    s_F_W_1 << -0.19,-0.13, 0.0;
+    s_R_W_1 << -0.56, 0.13, 0.0;
+    st_F_W_1 << -0.19, 0.13, 0.0;
+    st_R_W_1 << -0.56,-0.13, 0.0;
+    hip << 0.0, 0.0, 0.0;
+
+    Eigen::Vector3d  s_F_W_2;
+    Eigen::Vector3d  s_R_W_2;
+    Eigen::Vector3d  st_F_W_2;
+    Eigen::Vector3d  st_R_W_2;
+    s_F_W_2 << -0.19, 0.13, 0.0;
+    s_R_W_2 << -0.56,-0.13, 0.0;
+    st_F_W_2 << -0.19,-0.13, 0.0;
+    st_R_W_2 << -0.56, 0.13, 0.0;
+    
+    
+    
     if (!isIni) {
         isIni = true;
         if (legState == DataBus::FlSt) {
-            swingStartPos_F_W = fe_fr_pos_W;
-            swingStartPos_R_W = fe_rl_pos_W;
-            stanceStartPos_F_W = fe_fl_pos_W;
-            stanceStartPos_R_W = fe_rr_pos_W;
+            // swingStartPos_F_W = fe_fr_pos_W;
+            // swingStartPos_R_W = fe_rl_pos_W;
+            // stanceStartPos_F_W = fe_fl_pos_W;
+            // stanceStartPos_R_W = fe_rr_pos_W;
+            
+            swingStartPos_F_W = s_F_W_1;
+            swingStartPos_R_W = s_R_W_1;
+            stanceStartPos_F_W = st_F_W_1;
+            stanceStartPos_R_W = st_R_W_1;
         } else {
-            swingStartPos_F_W = fe_fl_pos_W;
-            swingStartPos_R_W = fe_rr_pos_W;
-            stanceStartPos_F_W = fe_fr_pos_W;
-            stanceStartPos_R_W = fe_rl_pos_W;
+            // swingStartPos_F_W = fe_fl_pos_W;
+            // swingStartPos_R_W = fe_rr_pos_W;
+            // stanceStartPos_F_W = fe_fr_pos_W;
+            // stanceStartPos_R_W = fe_rl_pos_W;
+
+            stanceStartPos_F_W = s_F_W_2;
+            stanceStartPos_R_W = s_R_W_2;
+            swingStartPos_F_W = st_F_W_2;
+            swingStartPos_R_W = st_R_W_2;
         }
     }
 
     // if (legState == DataBus::FlSt && FRest[2] >= FzThrehold && phi>0.6) {
     //     legState = DataBus::RSt;
-    //     swingStartPos_W = fe_l_pos_W;
-    //     stanceStartPos_W = fe_r_pos_W;
+        // swingStartPos_W = fe_l_pos_W;
+        // stanceStartPos_W = fe_r_pos_W;
     //     phi = 0;
     // } else if (legState == DataBus::RSt && FLest[2] >= FzThrehold && phi>0.6) {
     //     legState = DataBus::LSt;
@@ -118,34 +152,51 @@ void GaitScheduler::step() {
 
     if (legState == DataBus::FlSt && phi>=1.0) {
         legState = DataBus::FrSt;
-        swingStartPos_F_W = fe_fl_pos_W;
-        swingStartPos_R_W = fe_rr_pos_W;
-        stanceStartPos_F_W = fe_fr_pos_W;
-        stanceStartPos_R_W = fe_rl_pos_W;
+        // swingStartPos_F_W = fe_fl_pos_W;
+        // swingStartPos_R_W = fe_rr_pos_W;
+        // stanceStartPos_F_W = fe_fr_pos_W;
+        // stanceStartPos_R_W = fe_rl_pos_W;
+
+        stanceStartPos_F_W = s_F_W_2;
+        stanceStartPos_R_W = s_R_W_2;
+        swingStartPos_F_W = st_F_W_2;
+        swingStartPos_R_W = st_R_W_2;
         phi = 0;
     } else if (legState == DataBus::FrSt && phi>=1.0) {
         legState = DataBus::FlSt;
-        swingStartPos_F_W = fe_fr_pos_W;
-        swingStartPos_R_W = fe_rl_pos_W;
-        stanceStartPos_F_W = fe_fl_pos_W;
-        stanceStartPos_R_W = fe_rr_pos_W;
+        // swingStartPos_F_W = fe_fr_pos_W;
+        // swingStartPos_R_W = fe_rl_pos_W;
+        // stanceStartPos_F_W = fe_fl_pos_W;
+        // stanceStartPos_R_W = fe_rr_pos_W;
+
+        swingStartPos_F_W = s_F_W_1;
+        swingStartPos_R_W = s_R_W_1;
+        stanceStartPos_F_W = st_F_W_1;
+        stanceStartPos_R_W = st_R_W_1;
         phi = 0;
     }
-
     if (phi >= 1) {
         phi = 1;
     }
     if (legState == DataBus::FlSt) {
-        posHip_F_W = hip_fr_pos_W;
-        posHip_R_W = hip_rl_pos_W;
+        // posHip_F_W = hip_fr_pos_W;
+        // posHip_R_W = hip_rl_pos_W;
+        posHip_F_W = hip;
+        posHip_R_W = hip;
         theta0 = -3.1415 * 0.5;
         legStateNext = DataBus::FrSt;
     } else {
-        posHip_F_W = hip_fl_pos_W;
-        posHip_R_W = hip_rr_pos_W;
+        // posHip_F_W = hip_fl_pos_W;
+        // posHip_R_W = hip_rr_pos_W;
+        posHip_F_W = hip;
+        posHip_R_W = hip;
         theta0 = 3.1415 * 0.5;
         legStateNext = DataBus::FlSt;
     }
+    // std::cout<<"fl:"<<swingStartPos_F_W<<std::endl;
+    // std::cout<<"fr:"<<swingStartPos_R_W<<std::endl;
+    // std::cout<<"rl:"<<stanceStartPos_F_W<<std::endl;
+    // std::cout<<"rr:"<<stanceStartPos_R_W<<std::endl;
 }
 
 

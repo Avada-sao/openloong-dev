@@ -28,8 +28,11 @@ void FootPlacement::dataBusRead(DataBus &robotState) {
 
 void FootPlacement::dataBusWrite(DataBus &robotState) {
     //robotState.swing_fe_rpy_des_W<<0,0,robotState.base_rpy_des(2); // WARNING! ThetaZ!
-    robotState.swing_F_fe_pos_des_W<<pDesCur_F[0],pDesCur_F[1],pDesCur_F[2];
-    robotState.swing_R_fe_pos_des_W<<pDesCur_R[0],pDesCur_R[1],pDesCur_R[2];
+    // robotState.swing_F_fe_pos_des_W<<pDesCur_F[0],pDesCur_F[1],pDesCur_F[2];
+    // robotState.swing_R_fe_pos_des_W<<pDesCur_R[0],pDesCur_R[1],pDesCur_R[2];
+    robotState.swing_F_fe_pos_des_W = posStart_F_W;
+    robotState.swing_R_fe_pos_des_W = posStart_R_W;
+    
 }
 void FootPlacement::getSwingPos() {
     Eigen::Matrix3d KP;

@@ -7,8 +7,6 @@ Feel free to use in any purpose, and cite OpenLoong-Dynamics-Control in any styl
 */
 #include "pino_kin_dyn.h"
 #include <utility>
-#include "pino_kin_dyn.h"
-#include <utility>
 
 Pin_KinDyn::Pin_KinDyn(std::string urdf_pathIn) {
     pinocchio::JointModelFreeFlyer root_joint;//在buildModel()时调用pinocchio::JointModelFreeFlyer声明的root_joint，建立的模型是在urdf中第一个节点和世界坐标系之间加入了一个6自由度的浮动关节。

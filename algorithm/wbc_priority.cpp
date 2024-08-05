@@ -18,14 +18,8 @@ WBC_priority::WBC_priority(int model_nv_In, int QP_nvIn, int QP_ncIn, double miu
     St_qpV1.block<6, 6>(0, 0) = Eigen::MatrixXd::Identity(6, 6);
 
     // defined in body frame
-    f_z_low = 1;
-    f_z_upp = 200;
-
-    tau_upp_stand_L << 10, 20, 40;      // foot end contact torque limit for stand state, in body frame
-    tau_low_stand_L << -10, -20, -40;
-
-    tau_upp_walk_L << 25, 40, 40;       // foot end contact torque limit for walk state, in body frame
-    tau_low_walk_L << -25, -40, -40;
+    f_z_low = 0;
+    f_z_upp = 100;
 
     qpOASES::Options options;
     options.setToMPC();
@@ -71,24 +65,13 @@ void WBC_priority::dataBusRead(const DataBus &robotState) {
     swing_F_fe_pos_des_W = robotState.swing_F_fe_pos_des_W;
     swing_R_fe_pos_des_W = robotState.swing_R_fe_pos_des_W;
 
-    // swing_F_fe_rpy_des_W = robotState.swing_F_fe_rpy_des_W;
-    // swing_R_fe_rpy_des_W = robotState.swing_R_fe_rpy_des_W;
-
     stance_F_fe_pos_cur_W = robotState.stance_F_fe_pos_cur_W;
     stance_R_fe_pos_cur_W = robotState.stance_R_fe_pos_cur_W;
-
-    // stance_F_fe_rot_cur_W = robotState.stance_F_fe_rot_cur_W;
-    // stance_R_fe_rot_cur_W = robotState.stance_R_fe_rot_cur_W;
 
     fe_fl_pos_cur_W = robotState.fe_fl_pos_W;
     fe_rl_pos_cur_W = robotState.fe_rl_pos_W;
     fe_fr_pos_cur_W = robotState.fe_fr_pos_W;
     fe_rr_pos_cur_W = robotState.fe_rr_pos_W;
-
-    // fe_fl_rot_cur_W = robotState.fe_fl_rot_W;
-    // fe_rl_rot_cur_W = robotState.fe_rl_rot_W;
-    // fe_fr_rot_cur_W = robotState.fe_fr_rot_W;
-    // fe_rr_rot_cur_W = robotState.fe_rr_rot_W;
 
     des_ddq = robotState.des_ddq;
     des_dq = robotState.des_dq;
@@ -240,6 +223,7 @@ void WBC_priority::computeTau() {
         f_upp(13) = 0;
         f_upp(14) = 0;
 
+        f_low(4) = 60;
         f_low(5) = 0;
         f_low(6) = 0;
         f_low(7) = 0;
@@ -251,6 +235,7 @@ void WBC_priority::computeTau() {
         f_low(12) = 0;
         f_low(13) = 0;
         f_low(14) = 0;
+        f_low(19) = 60;
     } else if (legStateCur == DataBus::FrSt) {
         f_upp(0) = 0;
         f_upp(1) = 0;
@@ -270,6 +255,8 @@ void WBC_priority::computeTau() {
         f_low(3) = 0;
         f_low(4) = 0;
 
+        f_low(9) = 60;
+        f_low(14) = 60;
         f_low(15) = 0;
         f_low(16) = 0;
         f_low(17) = 0;
@@ -300,7 +287,7 @@ void WBC_priority::computeTau() {
     Eigen::MatrixXd eigen_qp_H = Eigen::MatrixXd::Zero(QP_nv, QP_nv);
     Q1 = Eigen::MatrixXd::Identity(6, 6);
     Q2 = Eigen::MatrixXd::Identity(12, 12);
-    eigen_qp_H.block<6, 6>(0, 0) = Q1 * 2.0 * 1e7;
+    eigen_qp_H.block<6, 6>(0, 0) = Q1 * 2.0 * 1e3;
     eigen_qp_H.block<12, 12>(6, 6) = Q2 * 2.0 * 1e1;
 
     // obj: (1/2)x'Hx+x'g
@@ -356,10 +343,12 @@ void WBC_priority::computeTau() {
     Eigen::VectorXd tauRes;
     tauRes = dyn_M * eigen_ddq_Opt + dyn_Non - Jfe.transpose() * eigen_fr_Opt;
     tauJointRes = tauRes.block(6, 0, model_nv - 6, 1);
-    std::cout<<"M:"<<dyn_M<<std::endl;
-    std::cout<<"q_,f_:"<<eigen_xOpt.transpose()<<std::endl;
-    std::cout<<"C:"<<dyn_M<<std::endl;
-    std::cout<<"J_c:"<<Jc<<std::endl;
+    // std::cout<<"M:"<<dyn_M<<std::endl;
+    // std::cout<<"ddq:"<<eigen_ddq_Opt.transpose()<<std::endl;
+    // std::cout<<"C:"<<dyn_M<<std::endl;
+    // std::cout<<"J_c:"<<Jc<<std::endl;
+    std::cout<<"f"<<eigen_fr_Opt<<std::endl;
+    // std::cout<<"tau:"<<tauJointRes<<std::endl;
     last_nWSR = nWSR;
     last_cpu_time = cpu_time;
 }
@@ -420,9 +409,9 @@ void WBC_priority::computeDdq(Pin_KinDyn &pinKinDynIn) {
     // ddq_final_kin = kin_tasks_walk.out_ddq;
     ddq_final_kin = kin_tasks_walk.out_ddq.setZero();
 
-    std::cout<<"delta_p:"<<delta_q_final_kin.transpose()<<std::endl;
-    std::cout<<"dp:"<<dq_final_kin.transpose()<<std::endl;
-    std::cout<<"ddp:"<<ddq_final_kin.transpose()<<std::endl;
+    // std::cout<<"delta_p:"<<delta_q_final_kin.transpose()<<std::endl;
+    // std::cout<<"dp:"<<dq_final_kin.transpose()<<std::endl;
+    // std::cout<<"ddp:"<<ddq_final_kin.transpose()<<std::endl;
 
     // final WBC output collection
 
