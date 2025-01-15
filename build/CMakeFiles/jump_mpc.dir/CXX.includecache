@@ -24704,25 +24704,25 @@ chrono
 cstdio
 -
 
-/home/xiao/proj/openloong-dev/demo/jump_mpc.cpp
+/home/ljz/proj/open/openloong-dyn-control/demo/jump_mpc.cpp
 MJ_interface.h
-/home/xiao/proj/openloong-dev/demo/MJ_interface.h
+/home/ljz/proj/open/openloong-dyn-control/demo/MJ_interface.h
 GLFW_callbacks.h
-/home/xiao/proj/openloong-dev/demo/GLFW_callbacks.h
+/home/ljz/proj/open/openloong-dyn-control/demo/GLFW_callbacks.h
 string
 -
 iostream
 -
 data_logger.h
-/home/xiao/proj/openloong-dev/demo/data_logger.h
+/home/ljz/proj/open/openloong-dyn-control/demo/data_logger.h
 PVT_ctrl.h
-/home/xiao/proj/openloong-dev/demo/PVT_ctrl.h
+/home/ljz/proj/open/openloong-dyn-control/demo/PVT_ctrl.h
 mpc.h
-/home/xiao/proj/openloong-dev/demo/mpc.h
+/home/ljz/proj/open/openloong-dyn-control/demo/mpc.h
 pino_kin_dyn.h
-/home/xiao/proj/openloong-dev/demo/pino_kin_dyn.h
+/home/ljz/proj/open/openloong-dyn-control/demo/pino_kin_dyn.h
 useful_math.h
-/home/xiao/proj/openloong-dev/demo/useful_math.h
+/home/ljz/proj/open/openloong-dyn-control/demo/useful_math.h
 data_logger.h
-/home/xiao/proj/openloong-dev/demo/data_logger.h
+/home/ljz/proj/open/openloong-dyn-control/demo/data_logger.h
 

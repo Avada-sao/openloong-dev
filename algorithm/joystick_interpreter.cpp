@@ -51,15 +51,10 @@ void JoyStickInterpreter::reset() {
     thetaZ=0;
 }
 
-// void JoyStickInterpreter::setIniPos(double posX, double posY, double thetaZ) {
-//     px_W=posX;
-//     py_W=posY;
-//     this->thetaZ=thetaZ;
-// }
-
-void JoyStickInterpreter::setIniPos(double posX, double posY) {
+void JoyStickInterpreter::setIniPos(double posX, double posY, double thetaZ) {
     px_W=posX;
     py_W=posY;
+    this->thetaZ=thetaZ;
 }
 
 

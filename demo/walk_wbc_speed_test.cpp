@@ -58,15 +58,10 @@ int main(int argc, const char **argv) {
     Eigen::Matrix3d fe_l_rot_des = eul2Rot(fe_l_eul_L_des(0), fe_l_eul_L_des(1), fe_l_eul_L_des(2));
     Eigen::Matrix3d fe_r_rot_des = eul2Rot(fe_r_eul_L_des(0), fe_r_eul_L_des(1), fe_r_eul_L_des(2));
 
-//    hd_l_pos_L_des<<-0.02, 0.32, -0.159;
-//    hd_r_pos_L_des<<-0.02, -0.32, -0.159;
-//    hd_l_eul_L_des<<-1.7581, 0.2129, 2.9581;
-//    hd_r_eul_L_des<<1.7581, 0.21291, -2.9581;
-
-    Eigen::Vector3d hd_l_pos_L_des = {-0.02, 0.32, -0.159};
-    Eigen::Vector3d hd_r_pos_L_des = {-0.02, -0.32, -0.159};
-    Eigen::Vector3d hd_l_eul_L_des = {-1.7581, 0.2129, 2.9581};
-    Eigen::Vector3d hd_r_eul_L_des = {1.7581, 0.2129, -2.9581};
+    Eigen::Vector3d hd_l_pos_L_des={-0.02, 0.32, -0.159};
+    Eigen::Vector3d hd_r_pos_L_des={-0.02, -0.32, -0.159};
+    Eigen::Vector3d hd_l_eul_L_des={-1.253, 0.122, -1.732};
+    Eigen::Vector3d hd_r_eul_L_des={1.253, 0.122, 1.732};
     Eigen::Matrix3d hd_l_rot_des = eul2Rot(hd_l_eul_L_des(0), hd_l_eul_L_des(1), hd_l_eul_L_des(2));
     Eigen::Matrix3d hd_r_rot_des = eul2Rot(hd_r_eul_L_des(0), hd_r_eul_L_des(1), hd_r_eul_L_des(2));
 
@@ -74,7 +69,7 @@ int main(int argc, const char **argv) {
     auto resHand = kinDynSolver.computeInK_Hand(hd_l_rot_des, hd_l_pos_L_des, hd_r_rot_des, hd_r_pos_L_des);
     Eigen::VectorXd qIniDes = Eigen::VectorXd::Zero(model_nv + 1, 1);
     qIniDes.block(7, 0, model_nv + 1 - 7, 1) = resLeg.jointPosRes + resHand.jointPosRes;
-    WBC_solv.setQini(qIniDes);
+    WBC_solv.setQini(qIniDes, RobotState.q);
 
     // register variable name for data logger
     logger.addIterm("motors_pos_cur", model_nv - 6);
@@ -141,7 +136,7 @@ int main(int argc, const char **argv) {
             jsInterp.setWzDesLPara(0, 1);
             jsInterp.setVxDesLPara(xv_des, 2.0); // jsInterp.setVxDesLPara(0.9,1);
         } else
-            jsInterp.setIniPos(RobotState.q(0), RobotState.q(1));
+            jsInterp.setIniPos(RobotState.q(0), RobotState.q(1), RobotState.base_rpy(2));
         jsInterp.setWzDesLPara(0, 1);
         jsInterp.setVxDesLPara(0, 2.0); // jsInterp.setVxDesLPara(0.9,1);
         jsInterp.step();
@@ -227,6 +222,7 @@ int main(int argc, const char **argv) {
 //        printf("gps=[%.5f, %.5f, %.5f]\n", RobotState.basePos[0], RobotState.basePos[1], RobotState.basePos[2]);
 //        printf("vel=[%.5f, %.5f, %.5f]\n", RobotState.baseLinVel[0], RobotState.baseLinVel[1],
 //               RobotState.baseLinVel[2]);
+        printf("Execution time: %.6f sec. \n", duration.count() );
     }
    //std::cout<< RobotState.wbc_tauJointRes.transpose()<<std::endl;
 
@@ -234,7 +230,7 @@ int main(int argc, const char **argv) {
 
     std::chrono::duration<double> duration = end - start;
     std::cout<<"loop time recorded to the last column of record/datalog.log"<<std::endl;
-//    std::cout << "Execution time: " << duration.count() << " seconds\n";
+
 //    std::cout << "Ava Loop time: " << duration.count()/LoopNum*1000. << " ms\n";
 
     return 0;

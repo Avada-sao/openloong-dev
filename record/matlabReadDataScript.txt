@@ -9,4 +9,3 @@ fR=dataRec(:,32:34);
 basePos=dataRec(:,35:37);
 baseLinVel=dataRec(:,38:40);
 baseAcc=dataRec(:,41:43);
-baseAngVel=dataRec(:,44:46);

@@ -15,10 +15,10 @@ class FootPlacement {
 public:
     double kp_vx{0}, kp_vy{0}, kp_wz{0};
     double legLength{1};
-    double stepHeight{0.03};
+    double stepHeight{0.1};
     double phi{0};    // phase varialbe for trajectory generation, must between 0 and 1
-    double tSwing{0.3}; // swing time
-    Eigen::Vector3d posStart_F_W, posStart_R_W, posDes_F_W, posDes_R_W, hipPos_F_W, hipPos_R_W;
+    double tSwing{0.4}; // swing time
+    Eigen::Vector3d posStart_F_W, posStart_R_W, posDes_F_W, posDes_R_W, hipPos_F_W, hipPos_R_W, hipPos_F_B, hipPos_R_B, STPos_W;
     Eigen::Vector3d desV_W, curV_W;
     double desWz_W;
     Eigen::Vector3d base_pos;
@@ -30,11 +30,10 @@ public:
 private:
     double pDesCur_F[3]{0};
     double pDesCur_R[3]{0};
-    double pDesCur_F_test[3]{0};
-    double pDesCur_R_test[3]{0};
     double yawCur;
-    double theta0;
+    double F_theta0;
+    double R_theta0;
     double omegaZ_W;
     double hip_width;
+    double bodyRadius;
 };
-

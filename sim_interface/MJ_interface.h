@@ -20,16 +20,15 @@ public:
     std::vector<double> motor_vel;
     double rpy[3]{0}; // roll,pitch and yaw of baselink
     double baseQuat[4]{0}; // in quat, mujoco order is [w,x,y,z], here we rearrange to [x,y,z,w]
-    double f3d[3][4]{0}; // 3D foot-end contact force, L for 1st col, R for 2nd col
+    double f3d[3][2]{0}; // 3D foot-end contact force, L for 1st col, R for 2nd col
     double basePos[3]{0}; // position of baselink, in world frame
     double baseAcc[3]{0};  // acceleration of baselink, in body frame
     double baseAngVel[3]{0}; // angular velocity of baselink, in body frame
     double baseLinVel[3]{0}; // linear velocity of baselink, in body frame
-
     const std::vector<std::string> JointName={"FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
                                               "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
                                               "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
-                                              "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",}; // joint name in XML file, the corresponds motors name should be M_*, ref to line 29 of MJ_Interface.cpp
+                                              "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"}; // joint name in XML file, the corresponds motors name should be M_*, ref to line 29 of MJ_Interface.cpp
     const std::string baseName="base";
     const std::string orientationSensorName="baselink-quat"; // in quat, mujoco order is [w,x,y,z], here we rearrange to [x,y,z,w]
     const std::string velSensorName="baselink-velocity";

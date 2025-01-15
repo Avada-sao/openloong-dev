@@ -20,12 +20,6 @@ iomanip
 vector
 -
 
-../math/useful_math.h
-Eigen/Dense
-../math/Eigen/Dense
-vector
--
-
 ../third_party/eigen3/Eigen/Cholesky
 Core
 ../third_party/eigen3/Eigen/Core
@@ -1280,27 +1274,15 @@ IndexedViewMethods.h
 ReshapedMethods.h
 ../third_party/eigen3/Eigen/src/plugins/ReshapedMethods.h
 
-/home/xiao/proj/openloong-dev/algorithm/foot_placement.cpp
+/home/ljz/proj/open/openloong-dyn-control/algorithm/foot_placement.cpp
 foot_placement.h
-/home/xiao/proj/openloong-dev/algorithm/foot_placement.h
+/home/ljz/proj/open/openloong-dyn-control/algorithm/foot_placement.h
 bezier_1D.h
-/home/xiao/proj/openloong-dev/algorithm/bezier_1D.h
+/home/ljz/proj/open/openloong-dyn-control/algorithm/bezier_1D.h
 
-/home/xiao/proj/openloong-dev/algorithm/foot_placement.h
+/home/ljz/proj/open/openloong-dyn-control/algorithm/foot_placement.h
 Eigen/Dense
 -
 data_bus.h
-/home/xiao/proj/openloong-dev/algorithm/data_bus.h
-
-/home/xiao/proj/openloong-dev/algorithm/gait_scheduler.cpp
-gait_scheduler.h
-/home/xiao/proj/openloong-dev/algorithm/gait_scheduler.h
-
-/home/xiao/proj/openloong-dev/algorithm/gait_scheduler.h
-data_bus.h
-/home/xiao/proj/openloong-dev/algorithm/data_bus.h
-Eigen/Dense
--
-useful_math.h
-/home/xiao/proj/openloong-dev/algorithm/useful_math.h
+/home/ljz/proj/open/openloong-dyn-control/algorithm/data_bus.h
 

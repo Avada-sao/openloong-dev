@@ -28,7 +28,7 @@ public:
     const std::vector<std::string> motorName={"FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
                                               "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
                                               "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
-                                              "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",}; // joint name in urdf and jason config files
+                                              "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"}; // joint name in urdf and jason config files
     Eigen::VectorXd motorMaxTorque;
     Eigen::VectorXd motorMaxPos;
     Eigen::VectorXd motorMinPos;
@@ -40,8 +40,8 @@ public:
     int model_nv;
 
     pinocchio::FrameIndex fr_foot, fl_foot, rr_foot, rl_foot;
-    pinocchio::JointIndex base_joint, fr_hip_joint, fl_hip_joint, rr_hip_joint, rl_hip_joint;
-    pinocchio::JointIndex fr_foot_fixed, fl_foot_fixed, rr_foot_fixed, rl_foot_fixed, r_hip_joint_fixed, l_hip_joint_fixed;
+    pinocchio::JointIndex base_joint, fr_hip_joint, fl_hip_joint, rr_hip_joint, rl_hip_joint, fr_thigh_joint, fl_thigh_joint, rr_thigh_joint, rl_thigh_joint;
+    pinocchio::JointIndex fr_foot_joint, fl_foot_joint, rr_foot_joint, rl_foot_joint, r_hip_joint_fixed, l_hip_joint_fixed, fr_hip_joint_fixed, fl_hip_joint_fixed, rr_hip_joint_fixed, rl_hip_joint_fixed;
     Eigen::VectorXd q,dq,ddq;
     Eigen::Matrix3d Rcur;
     Eigen::Quaternion<double> quatCur;
@@ -52,14 +52,16 @@ public:
     Eigen::Vector3d fe_r_pos_body, fe_l_pos_body;  // foot-end position in body frame
     Eigen::Vector3d hd_r_pos, hd_l_pos;  // hand position in world frame
     Eigen::Vector3d hd_r_pos_body, hd_l_pos_body; // hand position in body frame
-    Eigen::Vector3d hip_fl_pos, hip_fr_pos, hip_rl_pos, hip_rr_pos, hip_link_pos;
-    Eigen::Vector3d hip_r_pos_body, hip_l_pos_body;
+    Eigen::Vector3d hip_fl_pos, hip_fr_pos, hip_rl_pos, hip_rr_pos, hip_link_pos, thigh_fl_pos, thigh_fr_pos, thigh_rl_pos, thigh_rr_pos;
+    Eigen::Vector3d hip_r_pos_body, hip_l_pos_body, hip_fl_pos_body, hip_fr_pos_body, hip_rl_pos_body, hip_rr_pos_body;
     Eigen::Matrix3d hip_link_rot;
     Eigen::Matrix3d fe_r_rot, fe_l_rot, base_rot;
     Eigen::Matrix3d fe_r_rot_body, fe_l_rot_body;
     Eigen::Matrix3d hd_r_rot, hd_l_rot;
-    Eigen::MatrixXd legPos;
     Eigen::Matrix3d hd_r_rot_body, hd_l_rot_body;
+    Eigen::MatrixXd legPos;
+    bool read;
+    
     Eigen::MatrixXd dyn_M, dyn_M_inv, dyn_C, dyn_G, dyn_Ag, dyn_dAg;
     Eigen::VectorXd dyn_Non;
     Eigen::Vector3d CoM_pos;
@@ -90,4 +92,3 @@ private:
     pinocchio::Data data_biped, data_biped_fixed;
 
 };
-

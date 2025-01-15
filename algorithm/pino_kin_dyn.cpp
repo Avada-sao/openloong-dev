@@ -6,19 +6,16 @@ Feel free to use in any purpose, and cite OpenLoong-Dynamics-Control in any styl
  <web@openloong.org.cn>
 */
 #include "pino_kin_dyn.h"
+
 #include <utility>
 
 Pin_KinDyn::Pin_KinDyn(std::string urdf_pathIn) {
-    pinocchio::JointModelFreeFlyer root_joint;//在buildModel()时调用pinocchio::JointModelFreeFlyer声明的root_joint，建立的模型是在urdf中第一个节点和世界坐标系之间加入了一个6自由度的浮动关节。
+    pinocchio::JointModelFreeFlyer root_joint;
     pinocchio::urdf::buildModel(urdf_pathIn,root_joint,model_biped);
     pinocchio::urdf::buildModel(urdf_pathIn,model_biped_fixed);
     data_biped=pinocchio::Data(model_biped);
     data_biped_fixed=pinocchio::Data(model_biped_fixed);
     model_nv=model_biped.nv;
-
-    std::cout<<"model name: "<<model_biped.name<<std::endl;
-    for (pinocchio::JointIndex idx = 1; idx < model_biped.njoints; idx++)
-        std::cout<<"Joint #"<<idx<<": "<<model_biped.names[idx]<<std::endl;
 
     J_fr=Eigen::MatrixXd::Zero(6,model_nv);
     J_fl=Eigen::MatrixXd::Zero(6,model_nv);
@@ -51,12 +48,25 @@ Pin_KinDyn::Pin_KinDyn(std::string urdf_pathIn) {
     fl_hip_joint=model_biped.getJointId("FL_hip_joint");
     rr_hip_joint=model_biped.getJointId("RR_hip_joint");
     rl_hip_joint=model_biped.getJointId("RL_hip_joint");
-    base_joint=model_biped.getJointId("root_joint");
 
-    // read joint pvt parameters
-    //Json::Reader reader;
-    //Json::Value root_read;
-    //std::ifstream in("joint_ctrl_config.json",std::ios::binary);
+    fr_hip_joint_fixed=model_biped_fixed.getJointId("FR_hip_joint");
+    fl_hip_joint_fixed=model_biped_fixed.getJointId("FL_hip_joint");
+    rr_hip_joint_fixed=model_biped_fixed.getJointId("RR_hip_joint");
+    rl_hip_joint_fixed=model_biped_fixed.getJointId("RL_hip_joint");
+
+    fr_thigh_joint=model_biped.getJointId("FR_thigh_joint");
+    fl_thigh_joint=model_biped.getJointId("FL_thigh_joint");
+    rr_thigh_joint=model_biped.getJointId("RR_thigh_joint");
+    rl_thigh_joint=model_biped.getJointId("RL_thigh_joint");
+
+    base_joint=model_biped.getJointId("root_joint");
+    read = true;
+
+    // // read joint pvt parameters
+    // Json::Reader reader;
+    // Json::Value root_read;
+    // std::ifstream in("joint_ctrl_config.json",std::ios::binary);
+
     // motorMaxTorque=Eigen::VectorXd::Zero(motorName.size());
     // motorMaxPos=Eigen::VectorXd::Zero(motorName.size());
     // motorMinPos=Eigen::VectorXd::Zero(motorName.size());
@@ -66,7 +76,6 @@ Pin_KinDyn::Pin_KinDyn(std::string urdf_pathIn) {
     //     motorMaxPos(i)=(root_read[motorName[i]]["maxPos"].asDouble());
     //     motorMinPos(i)=(root_read[motorName[i]]["minPos"].asDouble());
     // }
-
     motorReachLimit.assign(motorName.size(),false);
     tauJointOld=Eigen::VectorXd::Zero(motorName.size());
 }
@@ -85,7 +94,6 @@ void Pin_KinDyn::dataBusRead(const DataBus &robotState) {
 }
 
 void Pin_KinDyn::dataBusWrite(DataBus &robotState) {
-    // NOTE: for the following Jacobians, x=J*dq, both x and dq are defined in the world frame
     robotState.J_fr=J_fr;
     robotState.J_fl=J_fl;
     robotState.J_rr=J_rr;
@@ -95,6 +103,7 @@ void Pin_KinDyn::dataBusWrite(DataBus &robotState) {
     robotState.dJ_rr=dJ_rr;
     robotState.dJ_rl=dJ_rl;
 
+
     robotState.J_base=J_base;
     robotState.dJ_base=dJ_base;
 
@@ -103,15 +112,15 @@ void Pin_KinDyn::dataBusWrite(DataBus &robotState) {
     robotState.fe_rr_pos_W=fe_rr_pos;
     robotState.fe_rl_pos_W=fe_rl_pos;
 
-    robotState.fe_l_pos_L=fe_l_pos_body;
-    robotState.fe_r_pos_L=fe_r_pos_body;
+    robotState.hip_fr_pos_B=hip_fl_pos_body;
+    robotState.hip_fl_pos_B=hip_fl_pos_body;
+    robotState.hip_rr_pos_B=hip_rr_pos_body;
+    robotState.hip_rl_pos_B=hip_rl_pos_body;
 
-    robotState.hip_r_pos_L=hip_r_pos_body;
-    robotState.hip_l_pos_L=hip_l_pos_body;
-    robotState.hip_fr_pos_W=hip_fr_pos;
-    robotState.hip_fl_pos_W=hip_fl_pos;
-    robotState.hip_rr_pos_W=hip_rr_pos;
-    robotState.hip_rl_pos_W=hip_rl_pos;
+    robotState.thigh_fr_pos_W=thigh_fr_pos;
+    robotState.thigh_fl_pos_W=thigh_fl_pos;
+    robotState.thigh_rr_pos_W=thigh_rr_pos;
+    robotState.thigh_rl_pos_W=thigh_rl_pos;
 
     robotState.dyn_M=dyn_M;
     robotState.dyn_M_inv=dyn_M_inv;
@@ -121,17 +130,22 @@ void Pin_KinDyn::dataBusWrite(DataBus &robotState) {
     robotState.dyn_dAg=dyn_dAg;
     robotState.dyn_Non=dyn_Non;
 
+    robotState.pCoM_W=CoM_pos;
+    robotState.Jcom_W=Jcom;
+
     robotState.inertia = inertia;  // w.r.t body frame
+
+
 }
 
 // update jacobians and joint positions
 void Pin_KinDyn::computeJ_dJ() {
-    
+
     pinocchio::forwardKinematics(model_biped,data_biped,q);
-    pinocchio::jacobianCenterOfMass(model_biped, data_biped, q, true);//在世界坐标系下质心位置的雅各布矩阵雅可比矩阵，(matrix 3 x model.nv)
-    pinocchio::computeJointJacobians(model_biped,data_biped,q);
-    pinocchio::computeJointJacobiansTimeVariation(model_biped,data_biped,q,dq);//雅各布随时间的变化，dj (matrix 6 x model.nv)
-    pinocchio::updateGlobalPlacements(model_biped,data_biped);//更新关节位置
+    pinocchio::jacobianCenterOfMass(model_biped, data_biped, q, true);
+//    pinocchio::computeJointJacobians(model_biped,data_biped,q);
+    pinocchio::computeJointJacobiansTimeVariation(model_biped,data_biped,q,dq);
+    pinocchio::updateGlobalPlacements(model_biped,data_biped);
 
     pinocchio::getFrameJacobian(model_biped,data_biped,fr_foot,pinocchio::LOCAL_WORLD_ALIGNED,J_fr);//LOCAL_WORLD_ALIGNED:坐标原点与机身坐标系重合，但坐标系轴线与世界坐标系平行
     pinocchio::getFrameJacobian(model_biped,data_biped,fl_foot,pinocchio::LOCAL_WORLD_ALIGNED,J_fl);//(matrix 6 x model.nv)
@@ -145,14 +159,14 @@ void Pin_KinDyn::computeJ_dJ() {
     pinocchio::getFrameJacobianTimeVariation(model_biped,data_biped,rl_foot,pinocchio::LOCAL_WORLD_ALIGNED,dJ_rl);
     pinocchio::getJointJacobianTimeVariation(model_biped,data_biped,base_joint,pinocchio::LOCAL_WORLD_ALIGNED,dJ_base);
 
-    // fe_fr_pos=data_biped.oMi[fr_foot].translation();//oMi:物体相对于参考坐标系的运动变换
-    // fe_fl_pos=data_biped.oMi[fl_foot].translation(); 
-    // fe_rr_pos=data_biped.oMi[rr_foot].translation();
-    // fe_rl_pos=data_biped.oMi[rl_foot].translation();  
     hip_fl_pos=data_biped.oMi[fl_hip_joint].translation();
     hip_fr_pos=data_biped.oMi[fr_hip_joint].translation();
     hip_rl_pos=data_biped.oMi[rl_hip_joint].translation();
     hip_rr_pos=data_biped.oMi[rr_hip_joint].translation();
+    thigh_fl_pos=data_biped.oMi[fl_thigh_joint].translation();
+    thigh_fr_pos=data_biped.oMi[fr_thigh_joint].translation();
+    thigh_rl_pos=data_biped.oMi[rl_thigh_joint].translation();
+    thigh_rr_pos=data_biped.oMi[rr_thigh_joint].translation();
     base_pos=data_biped.oMi[base_joint].translation();
     base_rot=data_biped.oMi[base_joint].rotation();
 
@@ -168,11 +182,16 @@ void Pin_KinDyn::computeJ_dJ() {
     fe_rl_pos = hip_rl_pos + legPos.block(0,2,3,1);
     fe_rr_pos = hip_rr_pos + legPos.block(0,3,3,1);
 
-    // std::cout<<"base_pos"<<base_pos.transpose()<<std::endl;
-    // std::cout<<"fe_fr_pos"<<fe_fr_pos.transpose()<<std::endl;
-    // std::cout<<"fe_fl_pos"<<fe_fl_pos.transpose()<<std::endl;
-    // std::cout<<"fe_rr_pos"<<fe_rr_pos.transpose()<<std::endl;
-    // std::cout<<"fe_rl_pos"<<fe_rl_pos.transpose()<<std::endl;
+    std::cout<<"base_pos"<<base_pos.transpose()<<std::endl;
+
+    std::cout<<"thigh_fl_pos"<<thigh_fl_pos.transpose()<<std::endl;
+    std::cout<<"thigh_fr_pos"<<thigh_fr_pos.transpose()<<std::endl;
+    std::cout<<"thigh_rl_pos"<<thigh_rl_pos.transpose()<<std::endl;
+    std::cout<<"thigh_rr_pos"<<thigh_rr_pos.transpose()<<std::endl;
+    std::cout<<"fe_fl_pos"<<fe_fl_pos.transpose()<<std::endl;
+    std::cout<<"fe_fr_pos"<<fe_fr_pos.transpose()<<std::endl;
+    std::cout<<"fe_rl_pos"<<fe_rl_pos.transpose()<<std::endl;
+    std::cout<<"fe_rr_pos"<<fe_rr_pos.transpose()<<std::endl;
 
     Jcom=data_biped.Jcom;// v_{\text{CoM}} = J_{\text{CoM}} \dot{q}
 
@@ -193,14 +212,18 @@ void Pin_KinDyn::computeJ_dJ() {
     dJ_base=dJ_base*Mpj;
     Jcom=Jcom*Mpj;
 
-    // Eigen::VectorXd q_fixed;
-    // q_fixed=q.block(7,0,model_biped_fixed.nv,1);
-    // pinocchio::forwardKinematics(model_biped_fixed,data_biped_fixed,q_fixed);
-    // pinocchio::updateGlobalPlacements(model_biped_fixed,data_biped_fixed);
-    // fe_l_pos_body=data_biped_fixed.oMi[l_ankle_joint_fixed].translation();
-    // fe_r_pos_body=data_biped_fixed.oMi[r_ankle_joint_fixed].translation();
-    // hip_l_pos_body=data_biped_fixed.oMi[l_hip_joint_fixed].translation();
-    // hip_r_pos_body=data_biped_fixed.oMi[r_hip_joint_fixed].translation();
+    Eigen::VectorXd q_fixed;
+    q_fixed=q.block(7,0,model_biped_fixed.nv,1);
+    pinocchio::forwardKinematics(model_biped_fixed,data_biped_fixed,q_fixed);
+    pinocchio::updateGlobalPlacements(model_biped_fixed,data_biped_fixed);
+
+    if(read){
+        hip_fl_pos_body=data_biped_fixed.oMi[fl_hip_joint].translation();
+        hip_fr_pos_body=data_biped_fixed.oMi[fr_hip_joint].translation();
+        hip_rl_pos_body=data_biped_fixed.oMi[rl_hip_joint].translation();
+        hip_rr_pos_body=data_biped_fixed.oMi[rr_hip_joint].translation();
+        read =false;
+    }
 }
 
 Eigen::Vector3d Pin_KinDyn::computeFp(Eigen::Vector3d q, int leg) {
@@ -208,9 +231,9 @@ Eigen::Vector3d Pin_KinDyn::computeFp(Eigen::Vector3d q, int leg) {
     double sideSigns[4] = {1, -1, 1, -1};
     double sideSign = sideSigns[leg];
 
-    double l1 = 0.08505;
-    double l2 = 0.2;
-    double l3 = 0.2;
+    double l1 = 0.1021;
+    double l2 = -0.28;
+    double l3 = -0.28;
 
     double s1 = std::sin(q(0));
     double s2 = std::sin(q(1));
@@ -220,16 +243,20 @@ Eigen::Vector3d Pin_KinDyn::computeFp(Eigen::Vector3d q, int leg) {
     double c2 = std::cos(q(1));
     double c3 = std::cos(q(2));
 
+    std::cout<<"q:"<<q(0)<<q(1)<<q(2)<<std::endl;
+
     double c23 = c2 * c3 - s2 * s3;
     double s23 = s2 * c3 + c2 * s3;
 
     Eigen::Vector3d p;
     p[0] = l3 * s23 + l2 * s2;
-    p[1] = l1 * sideSign * c1 + l3 * (s1 * c23) + l2 * c2 * s1;
-    p[2] = l1 * sideSign * s1 - l3 * (c1 * c23) - l2 * c1 * c2;
+    // p[1] = l1 * sideSign * c1 + l3 * (s1 * c23) + l2 * c2 * s1;
+    // p[2] = l1 * sideSign * s1 - l3 * (c1 * c23) - l2 * c1 * c2;
+
+    p[1] = l1 * sideSign * c1 - l2 * s1 *c2 - l3 * s1 * c23;
+    p[2] = l1 * sideSign * s1 + l2 * c1 *c2 + l3 * c1 * c23;
     return p;
 }
-
 
 Eigen::Quaterniond Pin_KinDyn::intQuat(const Eigen::Quaterniond &quat, const Eigen::Matrix<double, 3, 1> &w) {
     Eigen::Matrix3d Rcur=quat.normalized().toRotationMatrix();
@@ -264,23 +291,15 @@ Eigen::VectorXd Pin_KinDyn::integrateDIY(const Eigen::VectorXd &qI, const Eigen:
     qRes=qI;
     qRes(0)+=dqI(0);qRes(1)+=dqI(1);qRes(2)+=dqI(2);
     qRes(3)=quatNew.x();qRes(4)=quatNew.y();qRes(5)=quatNew.z();qRes(6)=quatNew.w();
-    for (int i=0;i<model_nv-6;i++){
-        // if (i==0 || i==3){
-        //     qRes(7) += dqI(9);
-        //     qRes(10) += dqI(6);
-        // }
+    for (int i=0;i<model_nv-6;i++)
         qRes(7+i)+=dqI(6+i);
-    }
-
-    
-
     return qRes;
 }
 
 // update dynamic parameters, M*ddq+C*dq+G=tau
 void Pin_KinDyn::computeDyn() {
     // cal M
-    pinocchio::crba(model_biped, data_biped, q);//关节惯性矩阵M上三角 部分（model.nv*model.nv）
+    pinocchio::crba(model_biped, data_biped, q);
     // Pinocchio only gives half of the M, needs to restore it here
     data_biped.M.triangularView<Eigen::Lower>() = data_biped.M.transpose().triangularView<Eigen::Lower>();
     dyn_M = data_biped.M;
@@ -299,7 +318,7 @@ void Pin_KinDyn::computeDyn() {
     dyn_G = data_biped.g;
 
     // cal Ag, Centroidal Momentum Matrix. First three rows: linear, other three rows: angular
-    pinocchio::dccrba(model_biped,data_biped,q,dq);//dM
+    pinocchio::dccrba(model_biped,data_biped,q,dq);
     pinocchio::computeCentroidalMomentum(model_biped,data_biped,q,dq);
     dyn_Ag=data_biped.Ag;
     dyn_dAg=data_biped.dAg;
@@ -309,12 +328,12 @@ void Pin_KinDyn::computeDyn() {
 
     // cal I
     pinocchio::ccrba(model_biped, data_biped, q, dq);
-    inertia = data_biped.Ig.inertia().matrix();//inertia:mpc中的简化模型的转动惯量矩阵（3*3）
+    inertia = data_biped.Ig.inertia().matrix();
 
     // cal CoM
     CoM_pos = data_biped.com[0];
-    // std::cout<<"CoM_W"<<std::endl;
-    // std::cout<<CoM_pos.transpose()<<std::endl;
+//    std::cout<<"CoM_W"<<std::endl;
+//    std::cout<<CoM_pos.transpose()<<std::endl;
 
     Eigen::MatrixXd Mpj, Mpj_inv; // transform into world frame
     Mpj=Eigen::MatrixXd::Identity(model_nv,model_nv);
@@ -328,6 +347,7 @@ void Pin_KinDyn::computeDyn() {
     dyn_C=Mpj_inv*dyn_C*Mpj;
     dyn_G=Mpj_inv*dyn_G;
     dyn_Non=Mpj_inv*dyn_Non;
+
 }
 
 // Inverse kinematics for leg posture. Note: the Rdes and Pdes are both w.r.t the baselink coordinate in body frame!
@@ -386,9 +406,9 @@ Pin_KinDyn::computeInK_Leg(const Eigen::Matrix3d &Rdes_L, const Eigen::Vector3d 
         Eigen::MatrixXd W;
         W=Eigen::MatrixXd::Identity(model_biped_fixed.nv, model_biped_fixed.nv);   // weighted matrix
         // arm-l: 0-6, arm-r: 7-13, head: 14,15 waist: 16-18, leg-l: 19-24, leg-r: 25-30
-        // W(16,16)=0.001;  // use a smaller value to make the solver try not to use waist joint
-        // W(17,17)=0.001;
-        // W(18,18)=0.001;
+//        W(16,16)=0.001;  // use a smaller value to make the solver try not to use waist joint
+//        W(17,17)=0.001;
+//        W(18,18)=0.001;
         JL.block(0,16,6,3).setZero();
         JR.block(0,16,6,3).setZero();
         pinocchio::Data::Matrix6 JlogL;
@@ -429,12 +449,11 @@ Pin_KinDyn::computeInK_Hand(const Eigen::Matrix3d &Rdes_L, const Eigen::Vector3d
     const pinocchio::SE3 oMdesR(Rdes_R, Pdes_R);
     Eigen::VectorXd qIk=Eigen::VectorXd::Zero(model_biped_fixed.nv); // initial guess
     // arm-l: 0-6, arm-r: 7-13, head: 14,15 waist: 16-18, leg-l: 19-24, leg-r: 25-30
-    qIk.block<7,1>(0,0)<< 0.433153883479341,    1.11739345867607,    1.88491913406236,
-            0.802378252758275,    1.22726400279662,    0.0249797771339966,  -0.0875282610654057;
+    qIk.block<7,1>(0,0)<< 0.433153883479341,    -1.11739345867607,    1.88491913406236,
+            0.802378252758275,    -0.356,    0.0,  -0.0;
 
     qIk.block<7,1>(7,0)<<-0.433152540054138,   -1.11739347975224,  -1.88492038240761,
-            0.802375980602373,   -1.22726323451626,   0.0249795712262396, 0.0875271396314979;
-
+            0.802375980602373,   0.356,   0.0, 0.0;
     const double eps  = 1e-4;
     const int IT_MAX  = 100;
     const double DT   = 6e-1;
@@ -523,6 +542,7 @@ void Pin_KinDyn::workspaceConstraint(Eigen::VectorXd &qFT, Eigen::VectorXd &tauJ
         }
         else
             motorReachLimit[i]=false;
+
     tauJointOld=tauJointFT;
 }
 

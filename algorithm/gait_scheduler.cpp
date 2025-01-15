@@ -39,12 +39,14 @@ void GaitScheduler::dataBusRead(const DataBus &robotState) {
     hip_fl_pos_W = robotState.hip_fl_pos_W;
     hip_rr_pos_W = robotState.hip_rr_pos_W;
     hip_rl_pos_W = robotState.hip_rl_pos_W;
+    hip_fr_pos_B = robotState.hip_fr_pos_B;
+    hip_fl_pos_B = robotState.hip_fl_pos_B;
+    hip_rr_pos_B = robotState.hip_rr_pos_B;
+    hip_rl_pos_B = robotState.hip_rl_pos_B;
     fe_fr_pos_W = robotState.fe_fr_pos_W;
     fe_fl_pos_W = robotState.fe_fl_pos_W;
     fe_rr_pos_W = robotState.fe_rr_pos_W;
     fe_rl_pos_W = robotState.fe_rl_pos_W;
-    fe_l_rot_W = robotState.fe_l_rot_W;
-    fe_r_rot_W = robotState.fe_r_rot_W;
     dq = robotState.dq;
 }
 
@@ -56,7 +58,10 @@ void GaitScheduler::dataBusWrite(DataBus &robotState) {
     robotState.stanceDesPos_R_W = stanceStartPos_R_W;
     robotState.posHip_F_W = posHip_F_W;
     robotState.posHip_R_W = posHip_R_W;
-    robotState.theta0 = theta0;
+    robotState.posHip_F_B = posHip_F_B;
+    robotState.posHip_R_B = posHip_R_B;
+    robotState.F_theta0 = F_theta0;
+    robotState.R_theta0 = R_theta0;
     robotState.legState = legState;
     robotState.legStateNext = legStateNext;
     robotState.phi = phi;
@@ -70,78 +75,45 @@ void GaitScheduler::dataBusWrite(DataBus &robotState) {
         robotState.stance_F_fe_pos_cur_W = fe_fr_pos_W;
         robotState.stance_R_fe_pos_cur_W = fe_rl_pos_W;
     }
-    std::cout<<"legState: "<<legState<<std::endl;
 }
 
 void GaitScheduler::step() {
     Eigen::VectorXd tauAll;
     tauAll = Eigen::VectorXd::Zero(model_nv);
     tauAll.block(6, 0, model_nv - 6, 1) = torJoint;
-    F_LFest = -pseudoInv_SVD(J_fr * dyn_M.inverse() * J_fr.transpose()) *
-            (J_fr * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_fr * dq);//pseudoInv_SVD：奇异值分解法求伪逆；
-    F_RFest = -pseudoInv_SVD(J_fl * dyn_M.inverse() * J_fl.transpose()) *
-            (J_fl * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_fl * dq);
-    F_LHest = -pseudoInv_SVD(J_rr * dyn_M.inverse() * J_rr.transpose()) *
-            (J_rr * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_rr * dq);//pseudoInv_SVD：奇异值分解法求伪逆；
-    F_RHest = -pseudoInv_SVD(J_rl * dyn_M.inverse() * J_rl.transpose()) *
-            (J_rl * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_rl * dq);
+    F_LFest = -pseudoInv_SVD(J_fr.block(0,0,3,model_nv) * dyn_M.inverse() * J_fr.block(0,0,3,model_nv).transpose()) *
+            (J_fr.block(0,0,3,model_nv) * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_fr.block(0,0,3,model_nv) * dq);//pseudoInv_SVD：奇异值分解法求伪逆；
+    F_RFest = -pseudoInv_SVD(J_fl.block(0,0,3,model_nv) * dyn_M.inverse() * J_fl.block(0,0,3,model_nv).transpose()) *
+            (J_fl.block(0,0,3,model_nv) * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_fl.block(0,0,3,model_nv) * dq);
+    F_LHest = -pseudoInv_SVD(J_rr.block(0,0,3,model_nv) * dyn_M.inverse() * J_rr.block(0,0,3,model_nv).transpose()) *
+            (J_rr.block(0,0,3,model_nv) * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_rr.block(0,0,3,model_nv) * dq);//pseudoInv_SVD：奇异值分解法求伪逆；
+    F_RHest = -pseudoInv_SVD(J_rl.block(0,0,3,model_nv) * dyn_M.inverse() * J_rl.block(0,0,3,model_nv).transpose()) *
+            (J_rl.block(0,0,3,model_nv) * dyn_M.inverse() * (tauAll - dyn_Non) + dJ_rl.block(0,0,3,model_nv) * dq);
 
     double dPhi = 1.0 / tSwing * dt;
 
+    // std::cout<<"Fest:"<<F_LFest.transpose()<<"  "<<F_RFest.transpose()<<"  "<<F_LHest.transpose()<<"  "<<F_RHest.transpose()<<std::endl;
+
     phi += dPhi;
-
-    Eigen::Vector3d  s_F_W_1;
-    Eigen::Vector3d  s_R_W_1;
-    Eigen::Vector3d  st_F_W_1;
-    Eigen::Vector3d  st_R_W_1;
-    Eigen::Vector3d  hip;
-    
-    s_F_W_1 << -0.19,-0.13, 0.0;
-    s_R_W_1 << -0.56, 0.13, 0.0;
-    st_F_W_1 << -0.19, 0.13, 0.0;
-    st_R_W_1 << -0.56,-0.13, 0.0;
-    hip << 0.0, 0.0, 0.0;
-
-    Eigen::Vector3d  s_F_W_2;
-    Eigen::Vector3d  s_R_W_2;
-    Eigen::Vector3d  st_F_W_2;
-    Eigen::Vector3d  st_R_W_2;
-    s_F_W_2 << -0.19, 0.13, 0.0;
-    s_R_W_2 << -0.56,-0.13, 0.0;
-    st_F_W_2 << -0.19,-0.13, 0.0;
-    st_R_W_2 << -0.56, 0.13, 0.0;
-    
-    
-    
     if (!isIni) {
         isIni = true;
         if (legState == DataBus::FlSt) {
-            // swingStartPos_F_W = fe_fr_pos_W;
-            // swingStartPos_R_W = fe_rl_pos_W;
-            // stanceStartPos_F_W = fe_fl_pos_W;
-            // stanceStartPos_R_W = fe_rr_pos_W;
-            
-            swingStartPos_F_W = s_F_W_1;
-            swingStartPos_R_W = s_R_W_1;
-            stanceStartPos_F_W = st_F_W_1;
-            stanceStartPos_R_W = st_R_W_1;
+            swingStartPos_F_W = fe_fr_pos_W;
+            swingStartPos_R_W = fe_rl_pos_W;
+            stanceStartPos_F_W = fe_fl_pos_W;
+            stanceStartPos_R_W = fe_rr_pos_W;
         } else {
-            // swingStartPos_F_W = fe_fl_pos_W;
-            // swingStartPos_R_W = fe_rr_pos_W;
-            // stanceStartPos_F_W = fe_fr_pos_W;
-            // stanceStartPos_R_W = fe_rl_pos_W;
-
-            stanceStartPos_F_W = s_F_W_2;
-            stanceStartPos_R_W = s_R_W_2;
-            swingStartPos_F_W = st_F_W_2;
-            swingStartPos_R_W = st_R_W_2;
+            swingStartPos_F_W = fe_fl_pos_W;
+            swingStartPos_R_W = fe_rr_pos_W;
+            stanceStartPos_F_W = fe_fr_pos_W;
+            stanceStartPos_R_W = fe_rl_pos_W;
         }
     }
 
     // if (legState == DataBus::FlSt && FRest[2] >= FzThrehold && phi>0.6) {
     //     legState = DataBus::RSt;
-        // swingStartPos_W = fe_l_pos_W;
-        // stanceStartPos_W = fe_r_pos_W;
+    //     swingStartPos_W = fe_l_pos_W;
+    //     stanceStartPos_W = fe_r_pos_W;
     //     phi = 0;
     // } else if (legState == DataBus::RSt && FLest[2] >= FzThrehold && phi>0.6) {
     //     legState = DataBus::LSt;
@@ -150,53 +122,48 @@ void GaitScheduler::step() {
     //     phi = 0;
     // }
 
-    if (legState == DataBus::FlSt && phi>=1.0) {
+    // if (legState == DataBus::FlSt && (F_RFest[2]>=FzThrehold || F_LHest[2]>=FzThrehold) && phi>=0.6) {
+    if (legState == DataBus::FlSt && phi>=1) {
         legState = DataBus::FrSt;
-        // swingStartPos_F_W = fe_fl_pos_W;
-        // swingStartPos_R_W = fe_rr_pos_W;
-        // stanceStartPos_F_W = fe_fr_pos_W;
-        // stanceStartPos_R_W = fe_rl_pos_W;
-
-        stanceStartPos_F_W = s_F_W_2;
-        stanceStartPos_R_W = s_R_W_2;
-        swingStartPos_F_W = st_F_W_2;
-        swingStartPos_R_W = st_R_W_2;
+        swingStartPos_F_W = fe_fl_pos_W;
+        swingStartPos_R_W = fe_rr_pos_W;
+        stanceStartPos_F_W = fe_fr_pos_W;
+        stanceStartPos_R_W = fe_rl_pos_W;
         phi = 0;
-    } else if (legState == DataBus::FrSt && phi>=1.0) {
+    } 
+    // else if (legState == DataBus::FrSt  && (F_RHest[2]>=FzThrehold || F_LFest[2]>=FzThrehold) && phi>=0.6) {
+    else if (legState == DataBus::FrSt  && phi>=1) {
         legState = DataBus::FlSt;
-        // swingStartPos_F_W = fe_fr_pos_W;
-        // swingStartPos_R_W = fe_rl_pos_W;
-        // stanceStartPos_F_W = fe_fl_pos_W;
-        // stanceStartPos_R_W = fe_rr_pos_W;
-
-        swingStartPos_F_W = s_F_W_1;
-        swingStartPos_R_W = s_R_W_1;
-        stanceStartPos_F_W = st_F_W_1;
-        stanceStartPos_R_W = st_R_W_1;
+        swingStartPos_F_W = fe_fr_pos_W;
+        swingStartPos_R_W = fe_rl_pos_W;
+        stanceStartPos_F_W = fe_fl_pos_W;
+        stanceStartPos_R_W = fe_rr_pos_W;
         phi = 0;
     }
+
+    std::cout<<"phi: "<<phi<<std::endl;
+
     if (phi >= 1) {
         phi = 1;
     }
     if (legState == DataBus::FlSt) {
-        // posHip_F_W = hip_fr_pos_W;
-        // posHip_R_W = hip_rl_pos_W;
-        posHip_F_W = hip;
-        posHip_R_W = hip;
-        theta0 = -3.1415 * 0.5;
+        posHip_F_W = hip_fr_pos_W;
+        posHip_R_W = hip_rl_pos_W;
+        posHip_F_B = hip_fr_pos_B;
+        posHip_R_B = hip_rl_pos_B;
+        F_theta0 = -0.53;
+        R_theta0 = 3.1415-0.53;
         legStateNext = DataBus::FrSt;
     } else {
-        // posHip_F_W = hip_fl_pos_W;
-        // posHip_R_W = hip_rr_pos_W;
-        posHip_F_W = hip;
-        posHip_R_W = hip;
-        theta0 = 3.1415 * 0.5;
+        posHip_F_W = hip_fl_pos_W;
+        posHip_R_W = hip_rr_pos_W;
+        posHip_F_B = hip_fl_pos_B;
+        posHip_R_B = hip_rr_pos_B;
+
+        F_theta0 = 0.53;
+        R_theta0 = -3.1415+0.53;
         legStateNext = DataBus::FlSt;
     }
-    // std::cout<<"fl:"<<swingStartPos_F_W<<std::endl;
-    // std::cout<<"fr:"<<swingStartPos_R_W<<std::endl;
-    // std::cout<<"rl:"<<stanceStartPos_F_W<<std::endl;
-    // std::cout<<"rr:"<<stanceStartPos_R_W<<std::endl;
 }
 
 

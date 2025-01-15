@@ -1,10 +1,4 @@
-/*
-This is part of OpenLoong Dynamics Control, an open project for the control of biped robot,
-Copyright (C) 2024 Humanoid Robot (Shanghai) Co., Ltd, under Apache 2.0.
-Feel free to use in any purpose, and cite OpenLoong-Dynamics-Control in any style, to contribute to the advancement of the community.
- <https://atomgit.com/openloong/openloong-dyn-control.git>
- <web@openloong.org.cn>
-*/
+
 #pragma once
 
 #include "Eigen/Dense"
@@ -31,6 +25,7 @@ struct DataBus{
     std::vector<double> motors_vel_cur;
     std::vector<double> motors_tor_cur;
     Eigen::VectorXd FL_est, FR_est;
+    bool isdqIni;
 
     // PVT controls
     std::vector<double> motors_pos_des;
@@ -41,15 +36,29 @@ struct DataBus{
     // states and key variables
     Eigen::VectorXd q, dq, ddq;
     Eigen::VectorXd qOld;
+    // Eigen::MatrixXd J_base, J_l, J_r, J_hd_l, J_hd_r, J_hip_link;
+    // Eigen::MatrixXd dJ_base, dJ_l, dJ_r, dJ_hd_l, dJ_hd_r;
     Eigen::MatrixXd J_base, J_fr, J_fl, J_rr, J_rl;
     Eigen::MatrixXd dJ_base, dJ_fr, dJ_fl, dJ_rr, dJ_rl;
+    Eigen::MatrixXd Jcom_W; // jacobian of CoM, in world frame
+    Eigen::Vector3d pCoM_W;
+    // Eigen::Vector3d fe_r_pos_W, fe_l_pos_W, base_pos;
     Eigen::Vector3d fe_fr_pos_W, fe_fl_pos_W, fe_rr_pos_W, fe_rl_pos_W, base_pos;
-    Eigen::Matrix3d fe_r_rot_W, fe_l_rot_W, base_rot; // in world frame
-    Eigen::Vector3d fe_r_pos_L, fe_l_pos_L; // in Body frame
-    Eigen::Vector3d hip_r_pos_L, hip_l_pos_L;
+    // Eigen::Matrix3d fe_r_rot_W, fe_l_rot_W, base_rot; // in world frame
+    // Eigen::Vector3d fe_r_pos_L, fe_l_pos_L; // in Body frame
+    Eigen::Matrix3d fe_fr_rot_W, fe_fl_rot_W, fe_rr_rot_W, fe_rl_rot_W, base_rot; // in world frame
+    Eigen::Vector3d fe_fr_pos_B, fe_fl_pos_B, fe_rr_pos_B, fe_rl_pos_B; // in Body frame
+    Eigen::Vector3d hip_link_pos;
+    // Eigen::Vector3d hip_r_pos_L, hip_l_pos_L;
+    // Eigen::Vector3d hip_r_pos_W, hip_l_pos_W;
     Eigen::Vector3d hip_fr_pos_W, hip_fl_pos_W;
     Eigen::Vector3d hip_rr_pos_W, hip_rl_pos_W;
+    Eigen::Vector3d hip_fr_pos_B, hip_fl_pos_B;
+    Eigen::Vector3d hip_rr_pos_B, hip_rl_pos_B;
+    Eigen::Vector3d thigh_fr_pos_W, thigh_fl_pos_W;
+    Eigen::Vector3d thigh_rr_pos_W, thigh_rl_pos_W;
     Eigen::Matrix3d fe_r_rot_L, fe_l_rot_L;
+    Eigen::Matrix3d hip_link_rot;
     Eigen::Vector3d fe_r_pos_L_cmd, fe_l_pos_L_cmd;
     Eigen::Matrix3d fe_r_rot_L_cmd, fe_l_rot_L_cmd;
 
@@ -83,14 +92,18 @@ struct DataBus{
     Eigen::VectorXd     dX_cal;
     Eigen::VectorXd     fe_react_tau_cmd;
 
-    double qp_nWSR_MPC, qp_cpuTime_MPC, qpStatus_MPC;
+    int 	qp_nWSR_MPC;
+    double 	qp_cpuTime_MPC;
+    int 	qpStatus_MPC;
 
     // cmd values for WBC
     Eigen::Vector3d base_rpy_des;
     Eigen::Vector3d base_pos_des;
     Eigen::VectorXd des_ddq, des_dq, des_delta_q, des_q;
+    // Eigen::Vector3d swing_fe_pos_des_W;
     Eigen::Vector3d swing_F_fe_pos_des_W, swing_R_fe_pos_des_W;
     Eigen::Vector3d swing_fe_rpy_des_W;
+    // Eigen::Vector3d stance_fe_pos_cur_W;
     Eigen::Vector3d stance_F_fe_pos_cur_W, stance_R_fe_pos_cur_W;
     Eigen::Matrix3d stance_fe_rot_cur_W;
     Eigen::VectorXd wbc_delta_q_final, wbc_dq_final, wbc_ddq_final;
@@ -102,16 +115,27 @@ struct DataBus{
     int qp_status;
 
     // values for foot-placement
+    // Eigen::Vector3d swingStartPos_W;
     Eigen::Vector3d swingStartPos_F_W, swingStartPos_R_W;
+    Eigen::Vector3d swingDesPosCur_W;
     Eigen::Vector3d swingDesPosCur_L;
+    Eigen::Vector3d swingDesPosFinal_W;
+    // Eigen::Vector3d stanceDesPos_W;
     Eigen::Vector3d stanceDesPos_R_W, stanceDesPos_F_W;
+    // Eigen::Vector3d posHip_W, posST_W;
     Eigen::Vector3d posHip_F_W, posHip_R_W;
+    Eigen::Vector3d posHip_F_B, posHip_R_B;
     Eigen::Vector3d desV_W; // desired linear velocity
     double desWz_W; // desired angular velocity
-    double theta0; // offset yaw angle of the swing leg, w.r.t body frame
+    double F_theta0, R_theta0; // offset yaw angle of the swing leg, w.r.t body frame
     double width_hips; // distance between the left and right hip
     double tSwing;
     double phi;
+    enum MotionState{
+        Stand,
+        Walk,
+        Walk2Stand
+    };
     enum LegState{
         FrSt,
         FlSt,
@@ -121,15 +145,16 @@ struct DataBus{
     double thetaZ_des{0};
     LegState legState;
     LegState legStateNext;
+    MotionState motionState;
+
 
     // for jump
     Eigen::Vector3d base_pos_stand;
     Eigen::Matrix<double,6,1> pfeW_stand, pfeW0;
     //Eigen::Vector3d mpc_eul_des, mpc_omega_des, mpc_vel_des, mpc_pos_des;
 
-
     DataBus(int model_nvIn): model_nv(model_nvIn){
-        motors_pos_cur.assign(model_nv-6,0);//assign：用于拷贝、赋值操作，允许我们顺次地把一个string对象的部分内容拷贝到另一个string对象上。
+        motors_pos_cur.assign(model_nv-6,0);
         motors_vel_cur.assign(model_nv-6,0);
         motors_tor_out.assign(model_nv-6,0);
         motors_tor_cur.assign(model_nv-6,0);
@@ -153,7 +178,6 @@ struct DataBus{
         Fr_ff = Eigen::VectorXd::Zero(12);
         des_ddq = Eigen::VectorXd::Zero(model_nv);
         des_dq = Eigen::VectorXd::Zero(model_nv);
-		des_q = Eigen::VectorXd::Zero(model_nv);
         des_delta_q = Eigen::VectorXd::Zero(model_nv);
         base_rpy_des.setZero();
         base_pos_des.setZero();
@@ -161,6 +185,7 @@ struct DataBus{
         js_pos_des.setZero();
         js_omega_des.setZero();
         js_vel_des.setZero();
+        motionState=Stand;
     };
 
     // update q according to sensor values, must update sensor values before
@@ -168,6 +193,9 @@ struct DataBus{
         base_omega_W << baseAngVel[0],baseAngVel[1],baseAngVel[2];
         auto Rcur= eul2Rot(rpy[0], rpy[1], rpy[2]);
         base_omega_W=Rcur*base_omega_W;
+
+        //  q = [global_base_position, global_base_quaternion, joint_positions]
+        //  dq = [global_base_velocity_linear, global_base_velocity_angular, joint_velocities]
 
         auto quatNow=eul2quat(rpy[0], rpy[1], rpy[2]);
         q(0)=basePos[0];
@@ -179,13 +207,12 @@ struct DataBus{
         q(6)=quatNow.w();
         for (int i=0;i<model_nv-6;i++)
             q(i+7)=motors_pos_cur[i];
-        //  For THIS project: The base translation and rotation parts are expressed in the world frame
-        //  q = [global_base_position, global_base_quaternion, joint_positions]
-        //  v = [global_base_velocity_linear, global_base_velocity_angular, joint_velocities]
-        Eigen::Vector3d vCoM_L;
-        vCoM_L << baseLinVel[0],baseLinVel[1],baseLinVel[2];
-        dq.block<3,1>(0,0)= vCoM_L;
+
+        Eigen::Vector3d vCoM_W;
+        vCoM_W << baseLinVel[0],baseLinVel[1],baseLinVel[2];
+        dq.block<3,1>(0,0)= vCoM_W;
         dq.block<3,1>(3,0) << base_omega_W[0],base_omega_W[1],base_omega_W[2];
+//        dq.block<3,1>(3,0) << baseAngVel[0],baseAngVel[1],baseAngVel[2];
         for (int i=0;i<model_nv-6;i++)
         {
             dq(i+6)=motors_vel_cur[i];

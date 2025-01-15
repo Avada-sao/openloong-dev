@@ -19,8 +19,7 @@ public:
     void setVxDesLPara(double vxDesLIn, double timeToReach);
     void setVyDesLPara(double vyDesLIn, double timeToReach);
     void setWzDesLPara(double wzDesLIn, double timeToReach);
-    // void setIniPos(double posX, double posY, double thetaZ);
-    void setIniPos(double posX, double posY);
+    void setIniPos(double posX, double posY, double thetaZ);
     void step();
     double vx_W{0}, vy_W{0}; // generated velocity in x and y direction w.r.t world frame
     double px_W{0}, py_W{0}; // generated position in x and y direction w.r.t world frame

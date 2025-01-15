@@ -245,8 +245,8 @@ CMakeFiles/core.dir/algorithm/foot_placement.cpp.o
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/ReshapedMethods.h
- /home/xiao/proj/openloong-dev/algorithm/foot_placement.cpp
- /home/xiao/proj/openloong-dev/algorithm/foot_placement.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/foot_placement.cpp
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/foot_placement.h
 CMakeFiles/core.dir/algorithm/gait_scheduler.cpp.o
  ../common/data_bus.h
  ../math/useful_math.h
@@ -491,8 +491,8 @@ CMakeFiles/core.dir/algorithm/gait_scheduler.cpp.o
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/ReshapedMethods.h
- /home/xiao/proj/openloong-dev/algorithm/gait_scheduler.cpp
- /home/xiao/proj/openloong-dev/algorithm/gait_scheduler.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/gait_scheduler.cpp
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/gait_scheduler.h
 CMakeFiles/core.dir/algorithm/joystick_interpreter.cpp.o
  ../common/data_bus.h
  ../math/ramp_trajectory.h
@@ -737,8 +737,8 @@ CMakeFiles/core.dir/algorithm/joystick_interpreter.cpp.o
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/ReshapedMethods.h
- /home/xiao/proj/openloong-dev/algorithm/joystick_interpreter.cpp
- /home/xiao/proj/openloong-dev/algorithm/joystick_interpreter.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/joystick_interpreter.cpp
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/joystick_interpreter.h
 CMakeFiles/core.dir/algorithm/mpc.cpp.o
  ../common/data_bus.h
  ../math/useful_math.h
@@ -1015,8 +1015,8 @@ CMakeFiles/core.dir/algorithm/mpc.cpp.o
  ../third_party/qpOASES/qpOASES/extras/OQPinterface.hpp
  ../third_party/qpOASES/qpOASES/extras/SolutionAnalysis.hpp
  ../third_party/qpOASES/qpOASES/extras/SolutionAnalysis.ipp
- /home/xiao/proj/openloong-dev/algorithm/mpc.cpp
- /home/xiao/proj/openloong-dev/algorithm/mpc.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/mpc.cpp
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/mpc.h
 CMakeFiles/core.dir/algorithm/pino_kin_dyn.cpp.o
  ../common/data_bus.h
  ../third_party/boost/boost/aligned_storage.hpp
@@ -3232,8 +3232,8 @@ CMakeFiles/core.dir/algorithm/pino_kin_dyn.cpp.o
  ../third_party/pinocchio/pinocchio/utils/static-if.hpp
  ../third_party/pinocchio/pinocchio/utils/string-generator.hpp
  ../third_party/pinocchio/pinocchio/warning.hpp
- /home/xiao/proj/openloong-dev/algorithm/pino_kin_dyn.cpp
- /home/xiao/proj/openloong-dev/algorithm/pino_kin_dyn.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/pino_kin_dyn.cpp
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/pino_kin_dyn.h
 CMakeFiles/core.dir/algorithm/priority_tasks.cpp.o
  ../math/useful_math.h
  ../third_party/eigen3/Eigen/Cholesky
@@ -3477,8 +3477,8 @@ CMakeFiles/core.dir/algorithm/priority_tasks.cpp.o
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/ReshapedMethods.h
- /home/xiao/proj/openloong-dev/algorithm/priority_tasks.cpp
- /home/xiao/proj/openloong-dev/algorithm/priority_tasks.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/priority_tasks.cpp
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/priority_tasks.h
 CMakeFiles/core.dir/algorithm/wbc_priority.cpp.o
  ../common/data_bus.h
  ../math/useful_math.h
@@ -5727,10 +5727,10 @@ CMakeFiles/core.dir/algorithm/wbc_priority.cpp.o
  ../third_party/qpOASES/qpOASES/extras/OQPinterface.hpp
  ../third_party/qpOASES/qpOASES/extras/SolutionAnalysis.hpp
  ../third_party/qpOASES/qpOASES/extras/SolutionAnalysis.ipp
- /home/xiao/proj/openloong-dev/algorithm/pino_kin_dyn.h
- /home/xiao/proj/openloong-dev/algorithm/priority_tasks.h
- /home/xiao/proj/openloong-dev/algorithm/wbc_priority.cpp
- /home/xiao/proj/openloong-dev/algorithm/wbc_priority.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/pino_kin_dyn.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/priority_tasks.h
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/wbc_priority.cpp
+ /home/ljz/proj/open/openloong-dyn-control/algorithm/wbc_priority.h
 CMakeFiles/core.dir/common/PVT_ctrl.cpp.o
  ../math/LPF_fst.h
  ../third_party/eigen3/Eigen/Cholesky
@@ -5983,9 +5983,9 @@ CMakeFiles/core.dir/common/PVT_ctrl.cpp.o
  ../third_party/jsoncpp/json/value.h
  ../third_party/jsoncpp/json/version.h
  ../third_party/jsoncpp/json/writer.h
- /home/xiao/proj/openloong-dev/common/PVT_ctrl.cpp
- /home/xiao/proj/openloong-dev/common/PVT_ctrl.h
- /home/xiao/proj/openloong-dev/common/data_bus.h
+ /home/ljz/proj/open/openloong-dyn-control/common/PVT_ctrl.cpp
+ /home/ljz/proj/open/openloong-dyn-control/common/PVT_ctrl.h
+ /home/ljz/proj/open/openloong-dyn-control/common/data_bus.h
 CMakeFiles/core.dir/common/data_logger.cpp.o
  ../third_party/eigen3/Eigen/Cholesky
  ../third_party/eigen3/Eigen/Core
@@ -6290,17 +6290,17 @@ CMakeFiles/core.dir/common/data_logger.cpp.o
  ../third_party/quill/quill/handlers/FileHandler.h
  ../third_party/quill/quill/handlers/Handler.h
  ../third_party/quill/quill/handlers/StreamHandler.h
- /home/xiao/proj/openloong-dev/common/data_logger.cpp
- /home/xiao/proj/openloong-dev/common/data_logger.h
+ /home/ljz/proj/open/openloong-dyn-control/common/data_logger.cpp
+ /home/ljz/proj/open/openloong-dyn-control/common/data_logger.h
 CMakeFiles/core.dir/math/LPF_fst.cpp.o
- /home/xiao/proj/openloong-dev/math/LPF_fst.cpp
- /home/xiao/proj/openloong-dev/math/LPF_fst.h
+ /home/ljz/proj/open/openloong-dyn-control/math/LPF_fst.cpp
+ /home/ljz/proj/open/openloong-dyn-control/math/LPF_fst.h
 CMakeFiles/core.dir/math/bezier_1D.cpp.o
- /home/xiao/proj/openloong-dev/math/bezier_1D.cpp
- /home/xiao/proj/openloong-dev/math/bezier_1D.h
+ /home/ljz/proj/open/openloong-dyn-control/math/bezier_1D.cpp
+ /home/ljz/proj/open/openloong-dyn-control/math/bezier_1D.h
 CMakeFiles/core.dir/math/ramp_trajectory.cpp.o
- /home/xiao/proj/openloong-dev/math/ramp_trajectory.cpp
- /home/xiao/proj/openloong-dev/math/ramp_trajectory.h
+ /home/ljz/proj/open/openloong-dyn-control/math/ramp_trajectory.cpp
+ /home/ljz/proj/open/openloong-dyn-control/math/ramp_trajectory.h
 CMakeFiles/core.dir/math/useful_math.cpp.o
  ../third_party/eigen3/Eigen/Cholesky
  ../third_party/eigen3/Eigen/Core
@@ -6543,8 +6543,8 @@ CMakeFiles/core.dir/math/useful_math.cpp.o
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
  ../third_party/eigen3/Eigen/src/plugins/ReshapedMethods.h
- /home/xiao/proj/openloong-dev/math/useful_math.cpp
- /home/xiao/proj/openloong-dev/math/useful_math.h
+ /home/ljz/proj/open/openloong-dyn-control/math/useful_math.cpp
+ /home/ljz/proj/open/openloong-dyn-control/math/useful_math.h
 CMakeFiles/core.dir/sim_interface/GLFW_callbacks.cpp.o
  ../third_party/glfw/GLFW/glfw3.h
  ../third_party/mujoco/mujoco/mjdata.h
@@ -6558,8 +6558,8 @@ CMakeFiles/core.dir/sim_interface/GLFW_callbacks.cpp.o
  ../third_party/mujoco/mujoco/mjui.h
  ../third_party/mujoco/mujoco/mjvisualize.h
  ../third_party/mujoco/mujoco/mujoco.h
- /home/xiao/proj/openloong-dev/sim_interface/GLFW_callbacks.cpp
- /home/xiao/proj/openloong-dev/sim_interface/GLFW_callbacks.h
+ /home/ljz/proj/open/openloong-dyn-control/sim_interface/GLFW_callbacks.cpp
+ /home/ljz/proj/open/openloong-dyn-control/sim_interface/GLFW_callbacks.h
 CMakeFiles/core.dir/sim_interface/MJ_interface.cpp.o
  ../common/data_bus.h
  ../third_party/eigen3/Eigen/Cholesky
@@ -6814,5 +6814,5 @@ CMakeFiles/core.dir/sim_interface/MJ_interface.cpp.o
  ../third_party/mujoco/mujoco/mjui.h
  ../third_party/mujoco/mujoco/mjvisualize.h
  ../third_party/mujoco/mujoco/mujoco.h
- /home/xiao/proj/openloong-dev/sim_interface/MJ_interface.cpp
- /home/xiao/proj/openloong-dev/sim_interface/MJ_interface.h
+ /home/ljz/proj/open/openloong-dyn-control/sim_interface/MJ_interface.cpp
+ /home/ljz/proj/open/openloong-dyn-control/sim_interface/MJ_interface.h

@@ -18,14 +18,13 @@ MJ_Interface::MJ_Interface(mjModel *mj_modelIn, mjData *mj_dataIn) {
     motor_pos.assign(jointNum,0);
     motor_vel.assign(jointNum,0);
     motor_pos_Old.assign(jointNum,0);
-
     for (int i=0;i<jointNum;i++)
     {
         int tmpId= mj_name2id(mj_model,mjOBJ_JOINT,JointName[i].c_str());
         if (tmpId==-1)
         {
             std::cerr <<JointName[i]<< " not found in the XML file!" << std::endl;
-            std::terminate();//terminate():用于终止程序
+            std::terminate();
         }
         jntId_qpos[i]=mj_model->jnt_qposadr[tmpId];
         jntId_qvel[i]=mj_model->jnt_dofadr[tmpId];
@@ -48,6 +47,7 @@ MJ_Interface::MJ_Interface(mjModel *mj_modelIn, mjData *mj_dataIn) {
     velSensorId= mj_name2id(mj_model,mjOBJ_SENSOR,velSensorName.c_str());
     gyroSensorId= mj_name2id(mj_model,mjOBJ_SENSOR,gyroSensorName.c_str());
     accSensorId= mj_name2id(mj_model,mjOBJ_SENSOR,accSensorName.c_str());
+
 }
 
 void MJ_Interface::updateSensorValues() {
@@ -55,10 +55,9 @@ void MJ_Interface::updateSensorValues() {
         motor_pos_Old[i]=motor_pos[i];
         motor_pos[i]=mj_data->qpos[jntId_qpos[i]];
         motor_vel[i]=mj_data->qvel[jntId_qvel[i]];
-
     }
     for (int i=0;i<4;i++)
-        baseQuat[i]=mj_data->sensordata[orientataionSensorId+i];
+        baseQuat[i]=mj_data->sensordata[mj_model->sensor_adr[orientataionSensorId]+i];
     double tmp=baseQuat[0];
     baseQuat[0]=baseQuat[1];
     baseQuat[1]=baseQuat[2];
@@ -73,28 +72,20 @@ void MJ_Interface::updateSensorValues() {
     {
         double posOld=basePos[i];
         basePos[i]=mj_data->xpos[3*baseBodyId+i];
-        baseAcc[i]=mj_data->sensordata[accSensorId+i];
-        baseAngVel[i]=mj_data->sensordata[gyroSensorId+i];
+        baseAcc[i]=mj_data->sensordata[mj_model->sensor_adr[accSensorId]+i];
+        baseAngVel[i]=mj_data->sensordata[mj_model->sensor_adr[gyroSensorId]+i];
         baseLinVel[i]=(basePos[i]-posOld)/(mj_model->opt.timestep);
     }
+
 }
 
 void MJ_Interface::setMotorsTorque(std::vector<double> &tauIn) {
-    // std::cout<<"tauIn: ";
-    for (int i=0;i<jointNum;i++){
+    for (int i=0;i<jointNum;i++)
         mj_data->ctrl[i]=tauIn.at(i);
-        // std::cout<<tauIn.at(i)<<"  ";
-    }
-    // std::cout<<std::endl;
 }
 
 void MJ_Interface::dataBusWrite(DataBus &busIn) {
     busIn.motors_pos_cur=motor_pos;
-    // std::cout<<"motor_pos: ";
-    // for (int i=0;i<jointNum;i++){
-    //     std::cout<<motor_pos[i]<<"  ";
-    // }
-    std::cout<<std::endl;
     busIn.motors_vel_cur=motor_vel;
     busIn.rpy[0]=rpy[0];
     busIn.rpy[1]=rpy[1];
